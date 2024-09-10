@@ -7,7 +7,7 @@ import {
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-export interface Response<T> {
+export interface TransformedResponse<T> {
   statusCode: number;
   message: string;
   data: T;
@@ -15,12 +15,12 @@ export interface Response<T> {
 
 @Injectable()
 export class ResponseTransformerInterceptor<T>
-  implements NestInterceptor<T, Response<T>>
+  implements NestInterceptor<T, TransformedResponse<T>>
 {
   intercept(
     context: ExecutionContext,
     next: CallHandler,
-  ): Observable<Response<T>> {
+  ): Observable<TransformedResponse<T>> {
     return next.handle().pipe(
       map((response) => ({
         statusCode: context.switchToHttp().getResponse().statusCode,

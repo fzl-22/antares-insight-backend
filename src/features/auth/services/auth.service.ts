@@ -1,22 +1,33 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { User } from '../schemas/user.schema';
 import {
   RegisterUserRequestDto,
   RegisterUserResponseDto,
 } from '../dto/register-user.dto';
 import * as bcrypt from 'bcrypt';
 import { AuthRepository } from '../repositories/auth.repository';
-import { plainToClass } from 'class-transformer';
+import { plainToClass, plainToInstance } from 'class-transformer';
+import {
+  LoggedInUserDto,
+  LoginUserRequestDto,
+  LoginUserResponseDto,
+} from '../dto/login-user.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-  constructor(private authRepository: AuthRepository) {}
+  constructor(
+    private authRepository: AuthRepository,
+    private jwtService: JwtService,
+  ) {}
 
-  async registerUser(registerUserDto: RegisterUserRequestDto): Promise<User> {
+  async registerUser(
+    registerUserDto: RegisterUserRequestDto,
+  ): Promise<RegisterUserResponseDto> {
     const { email, password } = registerUserDto;
 
     const existingUser = await this.authRepository.findOne({ email: email });
@@ -37,5 +48,31 @@ export class AuthService {
     }
 
     return plainToClass(RegisterUserResponseDto, user.toObject());
+  }
+
+  async loginUser(
+    loginUserDto: LoginUserRequestDto,
+  ): Promise<LoginUserResponseDto> {
+    const { email, password } = loginUserDto;
+
+    const user = await this.authRepository.findOne({ email: email });
+    if (!user) {
+      throw new BadRequestException('Email or password is incorrect');
+    }
+
+    const isPasswordMathing = await bcrypt.compare(password, user.password);
+    if (!isPasswordMathing) {
+      throw new BadRequestException('Email or password is incorrect');
+    }
+
+    const payload = { userId: user._id.toString(), email: user.email };
+    const token = await this.jwtService.signAsync(payload);
+
+    const userResponse = plainToInstance(LoggedInUserDto, user.toObject());
+
+    return plainToClass(LoginUserResponseDto, {
+      token: token,
+      user: userResponse,
+    });
   }
 }
