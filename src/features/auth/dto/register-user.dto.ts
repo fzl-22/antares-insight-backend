@@ -2,20 +2,20 @@ import { Exclude, Expose } from 'class-transformer';
 import { IsEmail, IsNotEmpty, MaxLength, MinLength } from 'class-validator';
 
 export class RegisterUserRequestDto {
-  @Expose({ name: 'first_name' })
+  @Expose()
   @IsNotEmpty()
   firstName: string;
 
-  @Expose({ name: 'last_name' })
+  @Expose()
   @IsNotEmpty()
   lastName: string;
 
-  @Expose({ name: 'email' })
+  @Expose()
   @IsNotEmpty()
   @IsEmail()
   email: string;
 
-  @Expose({ name: 'password' })
+  @Expose()
   @IsNotEmpty()
   @MinLength(8)
   @MaxLength(16)
