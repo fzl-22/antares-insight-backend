@@ -1,22 +1,31 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import {
   RegisterUserRequestDto,
+  RegisterUserResponse,
   RegisterUserResponseDto,
 } from '../dto/register-user.dto';
 import { AuthService } from '../services/auth.service';
 import {
   LoginUserRequestDto,
+  LoginUserResponse,
   LoginUserResponseDto,
 } from '../dto/login-user.dto';
 import { IResponse } from 'src/core/interfaces/interfaces';
+import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Auth')
 @Controller('/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
+  @ApiCreatedResponse({
+    description: 'User registered successfully.',
+    type: RegisterUserResponse,
+  })
   @Post('/register')
   async registerUser(
     @Body() registerUserDto: RegisterUserRequestDto,
-  ): Promise<{ message: string; data: RegisterUserResponseDto }> {
+  ): Promise<IResponse<RegisterUserResponseDto>> {
     const response = await this.authService.registerUser(registerUserDto);
     return {
       message: 'User registered successfully.',
@@ -24,6 +33,10 @@ export class AuthController {
     };
   }
 
+  @ApiCreatedResponse({
+    description: 'User logged in successfully.',
+    type: LoginUserResponse,
+  })
   @Post('/login')
   async loginUser(
     @Body() loginUserDto: LoginUserRequestDto,

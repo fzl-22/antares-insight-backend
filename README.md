@@ -58,6 +58,10 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+## Documentation
+
+Documentation is generated for every compilation and can be found in [http://localhost:3000/api/docs](http://localhost:3000/api/docs).
+
 ## Resources
 
 Check out a few resources that may come in handy when working with NestJS:
