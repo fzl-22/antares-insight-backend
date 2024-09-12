@@ -18,7 +18,7 @@ import {
 @ApiBearerAuth()
 @Controller('/users')
 export class UsersController {
-  constructor(private userService: UsersService) {}
+  constructor(private usersService: UsersService) {}
 
   @ApiHeader({
     name: 'Authorization',
@@ -38,7 +38,7 @@ export class UsersController {
   async getCurrentUser(
     @Request() getCurrentUserDto: GetCurrentUserRequestDto,
   ): Promise<IResponse<GetCurrentUserResponseDto>> {
-    const user = await this.userService.getCurrentUser(getCurrentUserDto);
+    const user = await this.usersService.getCurrentUser(getCurrentUserDto);
 
     return {
       message: 'User fetched successfully.',

@@ -8,14 +8,14 @@ import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class UsersService {
-  constructor(private userRepository: UsersRepository) {}
+  constructor(private usersRepository: UsersRepository) {}
 
   async getCurrentUser(
     getCurrentUserDto: GetCurrentUserRequestDto,
   ): Promise<GetCurrentUserResponseDto> {
     const { userId } = getCurrentUserDto;
 
-    const user = await this.userRepository.findUserById(userId);
+    const user = await this.usersRepository.findUserById(userId);
     if (!user) {
       throw new NotFoundException('User not found');
     }
