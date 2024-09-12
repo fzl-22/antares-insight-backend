@@ -23,9 +23,11 @@ export class ResponseTransformerInterceptor<T>
   ): Observable<TransformedResponse<T>> {
     return next.handle().pipe(
       map((response) => ({
-        statusCode: context.switchToHttp().getResponse().statusCode,
-        message: response.message,
-        data: response.data as T,
+        statusCode: context.switchToHttp().getResponse().statusCode ?? 500,
+        message:
+          response?.message ??
+          'Unknown error occurred. Please try again later.',
+        data: response?.data ? (response.data as T) : undefined,
       })),
     );
   }
