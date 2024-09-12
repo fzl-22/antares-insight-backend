@@ -47,7 +47,9 @@ export class AuthService {
       );
     }
 
-    return plainToClass(RegisterUserResponseDto, user.toObject());
+    return plainToClass(RegisterUserResponseDto, user.toObject(), {
+      excludeExtraneousValues: true,
+    });
   }
 
   async loginUser(
@@ -70,9 +72,13 @@ export class AuthService {
 
     const userResponse = plainToInstance(LoggedInUserDto, user.toObject());
 
-    return plainToClass(LoginUserResponseDto, {
-      token: token,
-      user: userResponse,
-    });
+    return plainToClass(
+      LoginUserResponseDto,
+      {
+        token: token,
+        user: userResponse,
+      },
+      { excludeExtraneousValues: true },
+    );
   }
 }

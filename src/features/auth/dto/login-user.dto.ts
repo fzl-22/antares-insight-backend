@@ -1,4 +1,4 @@
-import { Exclude, Expose, Type } from 'class-transformer';
+import { Exclude, Expose, Transform, Type } from 'class-transformer';
 import { IsNotEmpty } from 'class-validator';
 
 export class LoginUserRequestDto {
@@ -13,6 +13,10 @@ export class LoginUserRequestDto {
 
 export class LoggedInUserDto {
   @Expose()
+  @Transform(({ obj }) => obj._id.toString())
+  id: string;
+
+  @Expose()
   firstName: string;
 
   @Expose()
@@ -20,6 +24,12 @@ export class LoggedInUserDto {
 
   @Expose()
   email: string;
+
+  @Expose()
+  createdAt: Date;
+
+  @Expose()
+  updatedAt: Date;
 
   @Exclude()
   password: string;

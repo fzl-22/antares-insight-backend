@@ -1,4 +1,4 @@
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude, Expose, Transform } from 'class-transformer';
 import { IsEmail, IsNotEmpty, MaxLength, MinLength } from 'class-validator';
 
 export class RegisterUserRequestDto {
@@ -24,6 +24,10 @@ export class RegisterUserRequestDto {
 
 export class RegisterUserResponseDto {
   @Expose()
+  @Transform(({ obj }) => obj._id.toString())
+  id: string;
+
+  @Expose()
   firstName: string;
 
   @Expose()
@@ -31,6 +35,12 @@ export class RegisterUserResponseDto {
 
   @Expose()
   email: string;
+
+  @Expose()
+  createdAt: Date;
+
+  @Expose()
+  updatedAt: Date;
 
   @Exclude()
   password: string;
