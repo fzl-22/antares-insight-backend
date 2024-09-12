@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AuthGuard } from '../auth/guards/auth.guard';
+import { AuthGuard } from '../../core/guards/auth.guard';
 import { UserRepository } from './repositories/user.repository';
 import { UserService } from './services/user.service';
 import { MongooseModule } from '@nestjs/mongoose';

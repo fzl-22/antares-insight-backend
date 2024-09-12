@@ -8,7 +8,7 @@ import {
   LoginUserRequestDto,
   LoginUserResponseDto,
 } from '../dto/login-user.dto';
-import { IResponse } from 'src/common/interfaces/interfaces';
+import { IResponse } from 'src/core/interfaces/interfaces';
 
 @Controller('/auth')
 export class AuthController {

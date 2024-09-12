@@ -3,8 +3,8 @@ import {
   GetCurrentUserRequestDto,
   GetCurrentUserResponseDto,
 } from '../dto/get-current-user.dto';
-import { AuthGuard } from 'src/features/auth/guards/auth.guard';
-import { IResponse } from 'src/common/interfaces/interfaces';
+import { AuthGuard } from 'src/core/guards/auth.guard';
+import { IResponse } from 'src/core/interfaces/interfaces';
 import { UserService } from '../services/user.service';
 
 @Controller('/users')
