@@ -3,12 +3,12 @@ import {
   GetCurrentUserRequestDto,
   GetCurrentUserResponseDto,
 } from '../dto/get-current-user.dto';
-import { UserRepository } from '../repositories/user.repository';
+import { UsersRepository } from '../repositories/users.repository';
 import { plainToClass } from 'class-transformer';
 
 @Injectable()
-export class UserService {
-  constructor(private userRepository: UserRepository) {}
+export class UsersService {
+  constructor(private userRepository: UsersRepository) {}
 
   async getCurrentUser(
     getCurrentUserDto: GetCurrentUserRequestDto,

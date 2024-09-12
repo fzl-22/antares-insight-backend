@@ -6,7 +6,7 @@ import {
 } from '../dto/get-current-user.dto';
 import { AuthGuard } from 'src/core/guards/auth.guard';
 import { IResponse } from 'src/core/interfaces/interfaces';
-import { UserService } from '../services/user.service';
+import { UsersService } from '../services/users.service';
 import {
   ApiBearerAuth,
   ApiHeader,
@@ -17,8 +17,8 @@ import {
 @ApiTags('Users')
 @ApiBearerAuth()
 @Controller('/users')
-export class UserController {
-  constructor(private userService: UserService) {}
+export class UsersController {
+  constructor(private userService: UsersService) {}
 
   @ApiHeader({
     name: 'Authorization',

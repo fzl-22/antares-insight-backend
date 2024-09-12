@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { User, UserDocument } from 'src/features/auth/schemas/user.schema';
 
 @Injectable()
-export class UserRepository {
+export class UsersRepository {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
   async findUserById(userId: string): Promise<UserDocument | null> {
