@@ -33,6 +33,11 @@ export function setUpSwagger(app: INestApplication<any>): void {
         example: 'somesupersecretapikey',
       },
     })
+    .addSecurity('bearer', {
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
+    })
     .build();
 
   const document = SwaggerModule.createDocument(app, config, documentOptions);

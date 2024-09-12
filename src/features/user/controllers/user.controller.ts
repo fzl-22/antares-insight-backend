@@ -7,9 +7,15 @@ import {
 import { AuthGuard } from 'src/core/guards/auth.guard';
 import { IResponse } from 'src/core/interfaces/interfaces';
 import { UserService } from '../services/user.service';
-import { ApiHeader, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiHeader,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 @ApiTags('Users')
+@ApiBearerAuth()
 @Controller('/users')
 export class UserController {
   constructor(private userService: UserService) {}
