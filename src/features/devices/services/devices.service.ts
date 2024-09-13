@@ -5,10 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { DevicesRepository } from '@devices/repositories/devices.repository';
-import {
-  RegisterDeviceRequestDto,
-  RegisterDeviceResponseDto,
-} from '@devices/dto/register-device.dto';
+import { RegisterDeviceRequestDto } from '@devices/dto/register-device.dto';
 import { plainToClass } from 'class-transformer';
 import { UsersRepository } from '@users/repositories/users.repository';
 import {
@@ -16,10 +13,8 @@ import {
   GetDevicesResponseDto,
 } from '@devices/dto/get-devices.dto';
 import { Types } from 'mongoose';
-import {
-  GetDeviceByIdRequestDto,
-  GetDeviceByIdResponseDto,
-} from '@devices/dto/get-device-by-id.dto';
+import { GetDeviceByIdRequestDto } from '@devices/dto/get-device-by-id.dto';
+import { DeviceResponseDto } from '@devices/dto/device.dto';
 
 @Injectable()
 export class DevicesService {
@@ -31,7 +26,7 @@ export class DevicesService {
   async registerDevice(
     userId: string,
     registerDeviceDto: RegisterDeviceRequestDto,
-  ): Promise<RegisterDeviceResponseDto> {
+  ): Promise<DeviceResponseDto> {
     const { name, connectionUrl } = registerDeviceDto;
 
     const existingUser = await this.usersRepository.findUserById(userId);
@@ -57,7 +52,7 @@ export class DevicesService {
       );
     }
 
-    return plainToClass(RegisterDeviceResponseDto, device.toObject(), {
+    return plainToClass(DeviceResponseDto, device.toObject(), {
       excludeExtraneousValues: true,
     });
   }
@@ -98,7 +93,7 @@ export class DevicesService {
   async getDeviceById(
     userId: string,
     getDeviceByIdDto: GetDeviceByIdRequestDto,
-  ): Promise<GetDeviceByIdResponseDto> {
+  ): Promise<DeviceResponseDto> {
     const { deviceId } = getDeviceByIdDto;
 
     const existingUser = await this.usersRepository.findUserById(userId);
@@ -114,7 +109,7 @@ export class DevicesService {
       throw new NotFoundException('Device not found');
     }
 
-    return plainToClass(GetDeviceByIdResponseDto, device.toObject(), {
+    return plainToClass(DeviceResponseDto, device.toObject(), {
       excludeExtraneousValues: true,
     });
   }

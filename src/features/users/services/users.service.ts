@@ -1,8 +1,6 @@
+import { UserResponseDto } from '@auth/dto/user.dto';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import {
-  GetCurrentUserRequestDto,
-  GetCurrentUserResponseDto,
-} from '@users/dto/get-current-user.dto';
+import { GetCurrentUserRequestDto } from '@users/dto/get-current-user.dto';
 import { UsersRepository } from '@users/repositories/users.repository';
 import { plainToClass } from 'class-transformer';
 
@@ -12,7 +10,7 @@ export class UsersService {
 
   async getCurrentUser(
     getCurrentUserDto: GetCurrentUserRequestDto,
-  ): Promise<GetCurrentUserResponseDto> {
+  ): Promise<UserResponseDto> {
     const { userId } = getCurrentUserDto;
 
     const user = await this.usersRepository.findUserById(userId);
@@ -20,7 +18,7 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
 
-    return plainToClass(GetCurrentUserResponseDto, user.toObject(), {
+    return plainToClass(UserResponseDto, user.toObject(), {
       excludeExtraneousValues: true,
     });
   }

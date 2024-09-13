@@ -4,19 +4,16 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import {
-  RegisterUserRequestDto,
-  RegisterUserResponseDto,
-} from '@auth/dto/register-user.dto';
+import { RegisterUserRequestDto } from '@auth/dto/register-user.dto';
 import * as bcrypt from 'bcrypt';
 import { AuthRepository } from '@auth/repositories/auth.repository';
 import { plainToClass, plainToInstance } from 'class-transformer';
 import {
-  LoggedInUserDto,
   LoginUserRequestDto,
   LoginUserResponseDto,
 } from '@auth/dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
+import { UserResponseDto } from '@auth/dto/user.dto';
 
 @Injectable()
 export class AuthService {
@@ -27,7 +24,7 @@ export class AuthService {
 
   async registerUser(
     registerUserDto: RegisterUserRequestDto,
-  ): Promise<RegisterUserResponseDto> {
+  ): Promise<UserResponseDto> {
     const { email, password } = registerUserDto;
 
     const existingUser = await this.authRepository.findOne({ email: email });
@@ -47,7 +44,7 @@ export class AuthService {
       );
     }
 
-    return plainToClass(RegisterUserResponseDto, user.toObject(), {
+    return plainToClass(UserResponseDto, user.toObject(), {
       excludeExtraneousValues: true,
     });
   }
@@ -70,7 +67,7 @@ export class AuthService {
     const payload = { userId: user._id.toString(), email: user.email };
     const token = await this.jwtService.signAsync(payload);
 
-    const userResponse = plainToInstance(LoggedInUserDto, user.toObject());
+    const userResponse = plainToInstance(UserResponseDto, user.toObject());
 
     return plainToClass(
       LoginUserResponseDto,

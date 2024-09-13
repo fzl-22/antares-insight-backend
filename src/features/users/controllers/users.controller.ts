@@ -2,7 +2,6 @@ import { Controller, Get, Request, UseGuards } from '@nestjs/common';
 import {
   GetCurrentUserRequestDto,
   GetCurrentUserResponse,
-  GetCurrentUserResponseDto,
 } from '@users/dto/get-current-user.dto';
 import { AuthGuard } from '@core/guards/auth.guard';
 import { IResponse } from '@core/interfaces/interfaces';
@@ -13,6 +12,7 @@ import {
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { UserResponseDto } from '@auth/dto/user.dto';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -37,7 +37,7 @@ export class UsersController {
   @Get('/current')
   async getCurrentUser(
     @Request() getCurrentUserDto: GetCurrentUserRequestDto,
-  ): Promise<IResponse<GetCurrentUserResponseDto>> {
+  ): Promise<IResponse<UserResponseDto>> {
     const user = await this.usersService.getCurrentUser(getCurrentUserDto);
 
     return {

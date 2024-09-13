@@ -1,16 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Transform, Type } from 'class-transformer';
-import {
-  IsEnum,
-  IsInt,
-  IsNotEmpty,
-  IsOptional,
-  Min,
-  ValidateNested,
-} from 'class-validator';
+import { IsInt, IsOptional, Min, ValidateNested } from 'class-validator';
 import { DEFAULT_PAGE, DEFAULT_PER_PAGE } from '@core/constants/constants';
-import { DeviceCategory, DeviceStatus } from '@devices/schemas/device.schema';
-import { DeviceMetricDto } from '@devices/dto/register-device.dto';
+import { DeviceResponseDto } from '@devices/dto/device.dto';
 
 export class GetDevicesRequestDto {
   @IsOptional()
@@ -26,97 +17,32 @@ export class GetDevicesRequestDto {
   readonly perPage?: number = DEFAULT_PER_PAGE;
 }
 
-export class DeviceResponseDto {
-  /**
-   * User's device id
-   * @example '66e02e93a4b00a1e1444af56'
-   */
-  @Expose()
-  @Transform(({ obj }) => obj._id.toString())
-  id: string;
-
-  /**
-   * User's device name
-   * @example 'Power Meter Device'
-   */
-  @Expose()
-  name: string;
-
-  /**
-   * User's device connection URL
-   * @example 'https://example.com/api/power-meter'
-   */
-  @Expose()
-  @IsNotEmpty()
-  connectionUrl: string;
-
-  /**
-   * User's device category
-   * @example 'Power Meter'
-   */
-  @Expose()
-  @IsEnum(DeviceCategory)
-  category: DeviceCategory;
-
-  /**
-   * User's device physical location
-   * @example 'Room 1'
-   */
-  @Expose()
-  location: string;
-
-  /**
-   * User's registered device's status
-   * @example Inactive
-   */
-  @Expose()
-  @IsEnum(DeviceStatus)
-  status: DeviceStatus;
-
-  /**
-   * User ID associated with the device
-   * @example '60d4fe9f4d1a2b001c8c8a0d'
-   */
-  @Expose()
-  @Transform(({ obj }) => obj.userId.toString())
-  userId: string;
-
-  @ApiProperty({
-    description: "User's registered device's metrics",
-    type: [DeviceMetricDto],
-    example: [{ metric: 'Voltage', unit: 'V', min: 0, max: 250 }],
-  })
-  @Expose()
-  @ValidateNested({ each: true })
-  metrics: DeviceMetricDto[];
-}
-
 export class GetDevicesResponseDto {
   /**
    * Current page number
    * @example 1
    */
   @Expose()
-  page: number;
+  readonly page: number;
 
   /**
    * Number of devices per page
    * @example 10
    */
   @Expose()
-  perPage: number;
+  readonly perPage: number;
 
   /**
    * Total pages
    * @example 12
    */
   @Expose()
-  totalPages: number;
+  readonly totalPages: number;
 
   @Expose()
   @ValidateNested({ each: true })
   @Type(() => DeviceResponseDto)
-  devices: DeviceResponseDto[];
+  readonly devices: DeviceResponseDto[];
 }
 
 export class GetDevicesResponse {
@@ -124,16 +50,16 @@ export class GetDevicesResponse {
    * Response status code
    * @example 200
    */
-  statusCode: number;
+  readonly statusCode: number;
 
   /**
    * Response message
    * @example 'Device fetched successfully.'
    */
-  message: string;
+  readonly message: string;
 
   /**
    * Response data
    */
-  data: GetDevicesResponseDto;
+  readonly data: GetDevicesResponseDto;
 }

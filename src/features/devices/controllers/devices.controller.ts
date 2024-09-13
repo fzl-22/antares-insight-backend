@@ -12,7 +12,6 @@ import { DevicesService } from '@devices/services/devices.service';
 import {
   RegisterDeviceRequestDto,
   RegisterDeviceResponse,
-  RegisterDeviceResponseDto,
 } from '@devices/dto/register-device.dto';
 import { IResponse } from '@core/interfaces/interfaces';
 import { AuthGuard } from '@core/guards/auth.guard';
@@ -32,6 +31,7 @@ import {
   GetDeviceByIdRequestDto,
   GetDeviceByIdResponse,
 } from '@devices/dto/get-device-by-id.dto';
+import { DeviceResponseDto } from '@devices/dto/device.dto';
 
 @ApiTags('Devices')
 @ApiBearerAuth()
@@ -57,7 +57,7 @@ export class DevicesController {
   async registerDevice(
     @Request() request: { userId: string },
     @Body() registerDeviceDto: RegisterDeviceRequestDto,
-  ): Promise<IResponse<RegisterDeviceResponseDto>> {
+  ): Promise<IResponse<DeviceResponseDto>> {
     const { userId } = request;
     const response = await this.devicesService.registerDevice(
       userId,

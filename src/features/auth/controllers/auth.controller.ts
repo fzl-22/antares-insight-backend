@@ -2,7 +2,6 @@ import { Body, Controller, Post } from '@nestjs/common';
 import {
   RegisterUserRequestDto,
   RegisterUserResponse,
-  RegisterUserResponseDto,
 } from '@auth/dto/register-user.dto';
 import { AuthService } from '@auth/services/auth.service';
 import {
@@ -12,6 +11,7 @@ import {
 } from '@auth/dto/login-user.dto';
 import { IResponse } from '@core/interfaces/interfaces';
 import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
+import { UserResponseDto } from '@auth/dto/user.dto';
 
 @ApiTags('Auth')
 @Controller('/auth')
@@ -25,7 +25,7 @@ export class AuthController {
   @Post('/register')
   async registerUser(
     @Body() registerUserDto: RegisterUserRequestDto,
-  ): Promise<IResponse<RegisterUserResponseDto>> {
+  ): Promise<IResponse<UserResponseDto>> {
     const response = await this.authService.registerUser(registerUserDto);
     return {
       message: 'User registered successfully.',
