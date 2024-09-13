@@ -54,13 +54,10 @@ export class DevicesController {
     @Body() registerDeviceDto: RegisterDeviceRequestDto,
   ): Promise<IResponse<RegisterDeviceResponseDto>> {
     const { userId } = request;
-    console.log('BEFORE CONTROLLER: ', userId);
     const response = await this.devicesService.registerDevice(
       userId,
       registerDeviceDto,
     );
-
-    console.log('AFTER CONTROLLER: ', response.userId);
 
     return {
       message: 'Device created successfully.',

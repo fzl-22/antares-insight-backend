@@ -43,8 +43,6 @@ export class DevicesService {
       throw new ConflictException('Device is already registered');
     }
 
-    console.log('BEFORE SERVICE:', Types.ObjectId.createFromHexString(userId));
-
     const device = await this.devicesRepository.create({
       ...registerDeviceDto,
       userId: Types.ObjectId.createFromHexString(userId),
@@ -54,8 +52,6 @@ export class DevicesService {
         'Failed to register device, please try again later',
       );
     }
-    console.log('AFTER SERVICE:', device.userId);
-    console.log('TO OBJECT', device.toObject().userId);
 
     return plainToClass(RegisterDeviceResponseDto, device.toObject(), {
       excludeExtraneousValues: true,
