@@ -3,9 +3,11 @@ import {
   ExecutionContext,
   INestApplication,
   Injectable,
+  Provider,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
 
 @Injectable()
 export class ApiKeyGuard implements CanActivate {
@@ -43,4 +45,11 @@ export class ApiKeyGuard implements CanActivate {
 
 export const createApiKeyGuard = (app: INestApplication<any>): ApiKeyGuard => {
   return new ApiKeyGuard(app.get(ConfigModule));
+};
+
+export const createApiKeyGuardProvider = (): Provider => {
+  return {
+    provide: APP_GUARD,
+    useClass: ApiKeyGuard,
+  };
 };

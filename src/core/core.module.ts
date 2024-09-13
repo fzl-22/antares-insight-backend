@@ -2,8 +2,7 @@ import { Global, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from '@core/database/database.module';
 import { TokenModule } from '@core/token/token.module';
-import { APP_GUARD } from '@nestjs/core';
-import { ApiKeyGuard } from '@core/guards/api-key.guard';
+import { createApiKeyGuardProvider } from '@core/guards/api-key.guard';
 
 @Global()
 @Module({
@@ -15,11 +14,6 @@ import { ApiKeyGuard } from '@core/guards/api-key.guard';
     DatabaseModule,
     TokenModule,
   ],
-  providers: [
-    {
-      provide: APP_GUARD,
-      useClass: ApiKeyGuard,
-    },
-  ],
+  providers: [createApiKeyGuardProvider()],
 })
 export class CoreModule {}
