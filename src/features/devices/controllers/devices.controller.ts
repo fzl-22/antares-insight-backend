@@ -1,4 +1,12 @@
-import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { DevicesService } from '../services/devices.service';
 import {
   RegisterDeviceRequestDto,
@@ -12,24 +20,30 @@ import {
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiHeader,
+  ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import {
+  GetDevicesRequestDto,
+  GetDevicesResponse,
+  GetDevicesResponseDto,
+} from '../dto/get-devices.dto';
 
 @ApiTags('Devices')
 @ApiBearerAuth()
+@ApiHeader({
+  name: 'Authorization',
+  description: 'JWT token for authentication',
+  required: true,
+  schema: {
+    type: 'string',
+    example: 'my.jwt.token',
+  },
+})
 @Controller('devices')
 export class DevicesController {
   constructor(private devicesService: DevicesService) {}
 
-  @ApiHeader({
-    name: 'Authorization',
-    description: 'JWT token for authentication',
-    required: true,
-    schema: {
-      type: 'string',
-      example: 'my.jwt.token',
-    },
-  })
   @ApiCreatedResponse({
     description: 'Device created successfully.',
     type: RegisterDeviceResponse,
@@ -47,6 +61,27 @@ export class DevicesController {
 
     return {
       message: 'Device created successfully.',
+      data: response,
+    };
+  }
+
+  @ApiOkResponse({
+    description: 'Devices fetched successfully.',
+    type: GetDevicesResponse,
+  })
+  @UseGuards(AuthGuard)
+  @Get('/')
+  async getDevices(
+    @Request() request: { userId: string },
+    @Query() getDevicesDto: GetDevicesRequestDto,
+  ): Promise<IResponse<GetDevicesResponseDto>> {
+    const response = await this.devicesService.getDevices(
+      request.userId,
+      getDevicesDto,
+    );
+
+    return {
+      message: 'Devices fetched successfully.',
       data: response,
     };
   }

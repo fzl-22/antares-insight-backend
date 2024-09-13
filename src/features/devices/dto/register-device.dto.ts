@@ -182,7 +182,7 @@ export class RegisterDeviceResponse {
   message: string;
 
   /**
-   * User details
+   * Registered device details
    */
   data: RegisterDeviceResponseDto;
 }
