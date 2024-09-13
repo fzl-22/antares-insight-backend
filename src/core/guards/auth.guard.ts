@@ -1,17 +1,21 @@
 import {
   CanActivate,
   ExecutionContext,
+  Inject,
   Injectable,
+  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService, TokenExpiredError } from '@nestjs/jwt';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private configService: ConfigService,
+    @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -28,6 +32,10 @@ export class AuthGuard implements CanActivate {
       request['userId'] = payload.userId as string;
       return true;
     } catch (err) {
+      this.logger.warn(`${err.status} ${err.message}`, {
+        context: err.name,
+        trace: err.stack,
+      });
       if (err instanceof TokenExpiredError) {
         throw new UnauthorizedException('Token expired');
       } else {

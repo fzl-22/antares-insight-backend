@@ -2,16 +2,22 @@ import {
   CanActivate,
   ExecutionContext,
   INestApplication,
+  Inject,
   Injectable,
   Provider,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { Logger } from 'winston';
 
 @Injectable()
 export class ApiKeyGuard implements CanActivate {
-  constructor(private configService: ConfigService) {}
+  constructor(
+    private configService: ConfigService,
+    @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     try {
@@ -28,6 +34,10 @@ export class ApiKeyGuard implements CanActivate {
 
       return true;
     } catch (err) {
+      this.logger.warn(`${err.status} ${err.message}`, {
+        context: err.name,
+        trace: err.stack,
+      });
       throw err;
     }
   }
@@ -44,7 +54,10 @@ export class ApiKeyGuard implements CanActivate {
 }
 
 export const createApiKeyGuard = (app: INestApplication<any>): ApiKeyGuard => {
-  return new ApiKeyGuard(app.get(ConfigModule));
+  return new ApiKeyGuard(
+    app.get(ConfigModule),
+    app.get(WINSTON_MODULE_PROVIDER),
+  );
 };
 
 export const createApiKeyGuardProvider = (): Provider => {
