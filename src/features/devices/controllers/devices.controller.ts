@@ -15,7 +15,6 @@ import {
 } from '../dto/register-device.dto';
 import { IResponse } from 'src/core/interfaces/interfaces';
 import { AuthGuard } from 'src/core/guards/auth.guard';
-import { Types } from 'mongoose';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -54,10 +53,14 @@ export class DevicesController {
     @Request() request: { userId: string },
     @Body() registerDeviceDto: RegisterDeviceRequestDto,
   ): Promise<IResponse<RegisterDeviceResponseDto>> {
-    const response = await this.devicesService.registerDevice({
-      ...registerDeviceDto,
-      userId: Types.ObjectId.createFromHexString(request.userId),
-    });
+    const { userId } = request;
+    console.log('BEFORE CONTROLLER: ', userId);
+    const response = await this.devicesService.registerDevice(
+      userId,
+      registerDeviceDto,
+    );
+
+    console.log('AFTER CONTROLLER: ', response.userId);
 
     return {
       message: 'Device created successfully.',

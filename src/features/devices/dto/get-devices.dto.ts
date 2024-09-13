@@ -78,6 +78,7 @@ export class DeviceResponseDto {
    * @example '60d4fe9f4d1a2b001c8c8a0d'
    */
   @Expose()
+  @Transform(({ obj }) => obj.userId.toString())
   userId: string;
 
   @ApiProperty({

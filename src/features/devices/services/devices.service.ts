@@ -25,13 +25,12 @@ export class DevicesService {
   ) {}
 
   async registerDevice(
+    userId: string,
     registerDeviceDto: RegisterDeviceRequestDto,
   ): Promise<RegisterDeviceResponseDto> {
-    const { userId, name, connectionUrl } = registerDeviceDto;
+    const { name, connectionUrl } = registerDeviceDto;
 
-    const existingUser = await this.usersRepository.findUserById(
-      userId.toString(),
-    );
+    const existingUser = await this.usersRepository.findUserById(userId);
     if (!existingUser) {
       throw new NotFoundException('User not found');
     }
@@ -43,12 +42,19 @@ export class DevicesService {
       throw new ConflictException('Device is already registered');
     }
 
-    const device = await this.devicesRepository.create(registerDeviceDto);
+    console.log('BEFORE SERVICE:', Types.ObjectId.createFromHexString(userId));
+
+    const device = await this.devicesRepository.create({
+      ...registerDeviceDto,
+      userId: Types.ObjectId.createFromHexString(userId),
+    });
     if (!device) {
       throw new InternalServerErrorException(
         'Failed to register device, please try again later',
       );
     }
+    console.log('AFTER SERVICE:', device.userId);
+    console.log('TO OBJECT', device.toObject().userId);
 
     return plainToClass(RegisterDeviceResponseDto, device.toObject(), {
       excludeExtraneousValues: true,

@@ -10,6 +10,7 @@ import {
 import { DeviceCategory, DeviceStatus } from '../schemas/device.schema';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Types } from 'mongoose';
+// import { Types } from 'mongoose';
 
 export class DeviceMetricDto {
   /**
@@ -92,13 +93,6 @@ export class RegisterDeviceRequestDto {
   @ValidateNested({ each: true })
   metrics: DeviceMetricDto[];
 
-  /**
-   * User ID associated with the device
-   * @example '60d4fe9f4d1a2b001c8c8a0d'
-   */
-  @Expose()
-  userId: Types.ObjectId;
-
   @ApiHideProperty()
   @Exclude()
   status: DeviceStatus;
@@ -156,7 +150,8 @@ export class RegisterDeviceResponseDto {
    * @example '60d4fe9f4d1a2b001c8c8a0d'
    */
   @Expose()
-  userId: string;
+  @Transform(({ obj }) => obj.userId.toString())
+  userId: Types.ObjectId;
 
   @ApiProperty({
     description: "User's registered device's metrics",

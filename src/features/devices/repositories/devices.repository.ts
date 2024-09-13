@@ -14,7 +14,10 @@ export class DevicesRepository {
   constructor(@InjectModel(Device.name) private deviceModel: Model<Device>) {}
 
   async create(device: Device): Promise<DeviceDocument | null> {
-    return await this.deviceModel.create(device);
+    console.log('BEFORE CREATED DEVICE:', device.userId);
+    const createdDevice = await this.deviceModel.create(device);
+    console.log('AFTER CREATED DEVICE:', createdDevice.userId);
+    return createdDevice;
   }
 
   async findOne(filter: FilterQuery<Device>): Promise<DeviceDocument | null> {
