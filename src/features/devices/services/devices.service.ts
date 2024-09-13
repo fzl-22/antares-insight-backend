@@ -36,6 +36,7 @@ export class DevicesService {
     }
 
     const existingDevice = await this.devicesRepository.findOne({
+      userId: Types.ObjectId.createFromHexString(userId),
       $or: [{ name: name }, { connectionUrl: connectionUrl }],
     });
     if (existingDevice) {

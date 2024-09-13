@@ -32,10 +32,10 @@ export class DeviceMetric {
 
 @Schema({ timestamps: true })
 export class Device {
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true })
   name: string;
 
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true })
   connectionUrl: string;
 
   @Prop({
