@@ -16,6 +16,10 @@ import {
   GetDevicesResponseDto,
 } from '../dto/get-devices.dto';
 import { Types } from 'mongoose';
+import {
+  GetDeviceByIdRequestDto,
+  GetDeviceByIdResponseDto,
+} from '../dto/get-device-by-id.dto';
 
 @Injectable()
 export class DevicesService {
@@ -89,5 +93,29 @@ export class DevicesService {
       },
       { excludeExtraneousValues: true },
     );
+  }
+
+  async getDeviceById(
+    userId: string,
+    getDeviceByIdDto: GetDeviceByIdRequestDto,
+  ): Promise<GetDeviceByIdResponseDto> {
+    const { deviceId } = getDeviceByIdDto;
+
+    const existingUser = await this.usersRepository.findUserById(userId);
+    if (!existingUser) {
+      throw new NotFoundException('User not found');
+    }
+
+    const device = await this.devicesRepository.findOne({
+      _id: Types.ObjectId.createFromHexString(deviceId),
+      userId: Types.ObjectId.createFromHexString(userId),
+    });
+    if (!device) {
+      throw new NotFoundException('Device not found');
+    }
+
+    return plainToClass(GetDeviceByIdResponseDto, device.toObject(), {
+      excludeExtraneousValues: true,
+    });
   }
 }

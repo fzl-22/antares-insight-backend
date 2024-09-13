@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
   Query,
   Request,
@@ -27,6 +28,10 @@ import {
   GetDevicesResponse,
   GetDevicesResponseDto,
 } from '../dto/get-devices.dto';
+import {
+  GetDeviceByIdRequestDto,
+  GetDeviceByIdResponse,
+} from '../dto/get-device-by-id.dto';
 
 @ApiTags('Devices')
 @ApiBearerAuth()
@@ -82,6 +87,27 @@ export class DevicesController {
 
     return {
       message: 'Devices fetched successfully.',
+      data: response,
+    };
+  }
+
+  @ApiOkResponse({
+    description: 'Device fetched successfully.',
+    type: GetDeviceByIdResponse,
+  })
+  @UseGuards(AuthGuard)
+  @Get('/:deviceId')
+  async getDeviceById(
+    @Request() request: { userId: string },
+    @Param() getDeviceByIdDto: GetDeviceByIdRequestDto,
+  ) {
+    const response = await this.devicesService.getDeviceById(
+      request.userId,
+      getDeviceByIdDto,
+    );
+
+    return {
+      message: 'Device fetched successfully.',
       data: response,
     };
   }
