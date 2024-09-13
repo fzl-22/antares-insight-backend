@@ -71,7 +71,7 @@ export class GetCurrentUserResponse {
   message: string;
 
   /**
-   * User details
+   * Response data
    */
   data: GetCurrentUserResponseDto;
 }

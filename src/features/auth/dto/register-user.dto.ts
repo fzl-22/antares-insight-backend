@@ -102,7 +102,7 @@ export class RegisterUserResponse {
   message: string;
 
   /**
-   * User details
+   * Response data
    */
   data: RegisterUserResponseDto;
 }

@@ -51,7 +51,7 @@ export class DeviceResponseDto {
   connectionUrl: string;
 
   /**
-   * User's device location
+   * User's device category
    * @example 'Power Meter'
    */
   @Expose()
@@ -133,7 +133,7 @@ export class GetDevicesResponse {
   message: string;
 
   /**
-   * User's devices
+   * Response data
    */
   data: GetDevicesResponseDto;
 }

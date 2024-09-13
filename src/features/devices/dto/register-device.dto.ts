@@ -67,7 +67,7 @@ export class RegisterDeviceRequestDto {
   connectionUrl: string;
 
   /**
-   * User's device location
+   * User's device category
    * @example 'Power Meter'
    */
   @Expose()
@@ -177,7 +177,7 @@ export class RegisterDeviceResponse {
   message: string;
 
   /**
-   * Registered device details
+   * Response data
    */
   data: RegisterDeviceResponseDto;
 }
