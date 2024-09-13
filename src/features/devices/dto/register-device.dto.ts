@@ -7,7 +7,7 @@ import {
   IsUrl,
   ValidateNested,
 } from 'class-validator';
-import { DeviceCategory, DeviceStatus } from '../schemas/device.schema';
+import { DeviceCategory, DeviceStatus } from '@devices/schemas/device.schema';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Types } from 'mongoose';
 // import { Types } from 'mongoose';

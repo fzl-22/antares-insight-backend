@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Device, DeviceDocument } from '../schemas/device.schema';
+import { Device, DeviceDocument } from '@devices/schemas/device.schema';
 import { FilterQuery, Model } from 'mongoose';
-import { DEFAULT_PAGE, DEFAULT_PER_PAGE } from 'src/core/constants/constants';
+import { DEFAULT_PAGE, DEFAULT_PER_PAGE } from '@core/constants/constants';
 
 interface PaginationParams {
   page?: number;

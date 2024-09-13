@@ -8,9 +8,9 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
-import { DEFAULT_PAGE, DEFAULT_PER_PAGE } from 'src/core/constants/constants';
-import { DeviceCategory, DeviceStatus } from '../schemas/device.schema';
-import { DeviceMetricDto } from './register-device.dto';
+import { DEFAULT_PAGE, DEFAULT_PER_PAGE } from '@core/constants/constants';
+import { DeviceCategory, DeviceStatus } from '@devices/schemas/device.schema';
+import { DeviceMetricDto } from '@devices/dto/register-device.dto';
 
 export class GetDevicesRequestDto {
   @IsOptional()

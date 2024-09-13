@@ -8,14 +8,14 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { DevicesService } from '../services/devices.service';
+import { DevicesService } from '@devices/services/devices.service';
 import {
   RegisterDeviceRequestDto,
   RegisterDeviceResponse,
   RegisterDeviceResponseDto,
-} from '../dto/register-device.dto';
-import { IResponse } from 'src/core/interfaces/interfaces';
-import { AuthGuard } from 'src/core/guards/auth.guard';
+} from '@devices/dto/register-device.dto';
+import { IResponse } from '@core/interfaces/interfaces';
+import { AuthGuard } from '@core/guards/auth.guard';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -27,11 +27,11 @@ import {
   GetDevicesRequestDto,
   GetDevicesResponse,
   GetDevicesResponseDto,
-} from '../dto/get-devices.dto';
+} from '@devices/dto/get-devices.dto';
 import {
   GetDeviceByIdRequestDto,
   GetDeviceByIdResponse,
-} from '../dto/get-device-by-id.dto';
+} from '@devices/dto/get-device-by-id.dto';
 
 @ApiTags('Devices')
 @ApiBearerAuth()

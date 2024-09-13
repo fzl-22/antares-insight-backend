@@ -3,14 +3,14 @@ import {
   RegisterUserRequestDto,
   RegisterUserResponse,
   RegisterUserResponseDto,
-} from '../dto/register-user.dto';
-import { AuthService } from '../services/auth.service';
+} from '@auth/dto/register-user.dto';
+import { AuthService } from '@auth/services/auth.service';
 import {
   LoginUserRequestDto,
   LoginUserResponse,
   LoginUserResponseDto,
-} from '../dto/login-user.dto';
-import { IResponse } from 'src/core/interfaces/interfaces';
+} from '@auth/dto/login-user.dto';
+import { IResponse } from '@core/interfaces/interfaces';
 import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Auth')

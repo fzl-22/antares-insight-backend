@@ -3,10 +3,10 @@ import {
   GetCurrentUserRequestDto,
   GetCurrentUserResponse,
   GetCurrentUserResponseDto,
-} from '../dto/get-current-user.dto';
-import { AuthGuard } from 'src/core/guards/auth.guard';
-import { IResponse } from 'src/core/interfaces/interfaces';
-import { UsersService } from '../services/users.service';
+} from '@users/dto/get-current-user.dto';
+import { AuthGuard } from '@core/guards/auth.guard';
+import { IResponse } from '@core/interfaces/interfaces';
+import { UsersService } from '@users/services/users.service';
 import {
   ApiBearerAuth,
   ApiHeader,

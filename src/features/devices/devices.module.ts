@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Device, DeviceSchema } from './schemas/device.schema';
-import { DevicesRepository } from './repositories/devices.repository';
-import { DevicesService } from './services/devices.service';
-import { DevicesController } from './controllers/devices.controller';
-import { User } from '../auth/schemas/user.schema';
-import { UsersModule } from '../users/users.module';
+import { Device, DeviceSchema } from '@devices/schemas/device.schema';
+import { DevicesRepository } from '@devices/repositories/devices.repository';
+import { DevicesService } from '@devices/services/devices.service';
+import { DevicesController } from '@devices/controllers/devices.controller';
+import { User } from '@auth/schemas/user.schema';
+import { UsersModule } from '@users/users.module';
 
 @Module({
   imports: [

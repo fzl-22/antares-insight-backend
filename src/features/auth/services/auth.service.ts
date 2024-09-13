@@ -7,15 +7,15 @@ import {
 import {
   RegisterUserRequestDto,
   RegisterUserResponseDto,
-} from '../dto/register-user.dto';
+} from '@auth/dto/register-user.dto';
 import * as bcrypt from 'bcrypt';
-import { AuthRepository } from '../repositories/auth.repository';
+import { AuthRepository } from '@auth/repositories/auth.repository';
 import { plainToClass, plainToInstance } from 'class-transformer';
 import {
   LoggedInUserDto,
   LoginUserRequestDto,
   LoginUserResponseDto,
-} from '../dto/login-user.dto';
+} from '@auth/dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()

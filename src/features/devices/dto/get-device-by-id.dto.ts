@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Transform } from 'class-transformer';
 import { IsNotEmpty, IsEnum, ValidateNested } from 'class-validator';
-import { DeviceCategory, DeviceStatus } from '../schemas/device.schema';
-import { DeviceMetricDto } from './register-device.dto';
+import { DeviceCategory, DeviceStatus } from '@devices/schemas/device.schema';
+import { DeviceMetricDto } from '@devices/dto/register-device.dto';
 
 export class GetDeviceByIdRequestDto {
   @Expose()

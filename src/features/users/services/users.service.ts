@@ -2,8 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   GetCurrentUserRequestDto,
   GetCurrentUserResponseDto,
-} from '../dto/get-current-user.dto';
-import { UsersRepository } from '../repositories/users.repository';
+} from '@users/dto/get-current-user.dto';
+import { UsersRepository } from '@users/repositories/users.repository';
 import { plainToClass } from 'class-transformer';
 
 @Injectable()

@@ -4,22 +4,22 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { DevicesRepository } from '../repositories/devices.repository';
+import { DevicesRepository } from '@devices/repositories/devices.repository';
 import {
   RegisterDeviceRequestDto,
   RegisterDeviceResponseDto,
-} from '../dto/register-device.dto';
+} from '@devices/dto/register-device.dto';
 import { plainToClass } from 'class-transformer';
-import { UsersRepository } from 'src/features/users/repositories/users.repository';
+import { UsersRepository } from '@users/repositories/users.repository';
 import {
   GetDevicesRequestDto,
   GetDevicesResponseDto,
-} from '../dto/get-devices.dto';
+} from '@devices/dto/get-devices.dto';
 import { Types } from 'mongoose';
 import {
   GetDeviceByIdRequestDto,
   GetDeviceByIdResponseDto,
-} from '../dto/get-device-by-id.dto';
+} from '@devices/dto/get-device-by-id.dto';
 
 @Injectable()
 export class DevicesService {
