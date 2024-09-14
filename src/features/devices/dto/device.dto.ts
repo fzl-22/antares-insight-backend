@@ -40,6 +40,45 @@ export class DeviceMetricDto {
   readonly max: number;
 }
 
+export class DeviceHistoryDto {
+  /**
+   * Device history id
+   * @example '66e02e93a4b00a1e1444af56'
+   */
+  @Expose()
+  @Transform(({ obj }) => obj._id.toString())
+  readonly id: string;
+
+  /**
+   * Device status at the time of the history entry
+   * @example 'Active'
+   */
+  @Expose()
+  @IsEnum(DeviceStatus)
+  readonly status: DeviceStatus;
+
+  /**
+   * Device history message
+   * @example 'Device is activate for X reason.'
+   */
+  @Expose()
+  readonly message: string;
+
+  /**
+   * Date when the history is created
+   * @example '2023-05-24T13:45:36.789Z'
+   */
+  @Expose()
+  readonly createdAt: Date;
+
+  /**
+   * Date when the history is updated
+   * @example '2023-05-24T13:45:36.789Z'
+   */
+  @Expose()
+  readonly updatedAt: Date;
+}
+
 export class DeviceResponseDto {
   /**
    * User's device id
@@ -103,4 +142,21 @@ export class DeviceResponseDto {
   @Expose()
   @ValidateNested({ each: true })
   readonly metrics: DeviceMetricDto[];
+
+  @ApiProperty({
+    description: "User's registered device's history",
+    type: [DeviceHistoryDto],
+    example: [
+      {
+        id: '66e5093eda304e25f1b7108a',
+        status: 'Inactive',
+        message: 'Device is deactivate for X reason.',
+        createdAt: new Date('2023-05-24T13:45:36.789Z'),
+        updatedAt: new Date('2023-05-24T13:45:36.789Z'),
+      },
+    ],
+  })
+  @Expose()
+  @ValidateNested({ each: true })
+  readonly history?: DeviceHistoryDto[];
 }

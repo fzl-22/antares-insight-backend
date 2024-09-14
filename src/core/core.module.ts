@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from '@core/database/database.module';
 import { TokenModule } from '@core/token/token.module';
 import { createApiKeyGuardProvider } from '@core/guards/api-key.guard';
-import { LoggerModule } from './logger/logger.module';
+import { LoggerModule } from '@core/logger/logger.module';
 
 @Global()
 @Module({

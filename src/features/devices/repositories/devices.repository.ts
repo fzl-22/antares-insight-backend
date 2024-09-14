@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Device, DeviceDocument } from '@devices/schemas/device.schema';
-import { FilterQuery, Model } from 'mongoose';
+import { FilterQuery, Model, Types } from 'mongoose';
 import { DEFAULT_PAGE, DEFAULT_PER_PAGE } from '@core/constants/constants';
 
 interface PaginationParams {
@@ -17,8 +17,15 @@ export class DevicesRepository {
     return await this.deviceModel.create(device);
   }
 
-  async findOne(filter: FilterQuery<Device>): Promise<DeviceDocument | null> {
-    return await this.deviceModel.findOne(filter).exec();
+  async findOne(
+    filter: FilterQuery<Device>,
+    params: { selectHistory: boolean } = { selectHistory: true },
+  ): Promise<DeviceDocument | null> {
+    const query = this.deviceModel.findOne(filter);
+    if (!params.selectHistory) {
+      query.select('-history');
+    }
+    return await query.exec();
   }
 
   async findAll(
@@ -26,10 +33,24 @@ export class DevicesRepository {
     { page = DEFAULT_PAGE, perPage = DEFAULT_PER_PAGE }: PaginationParams,
   ): Promise<DeviceDocument[]> {
     const skip = (page - 1) * perPage;
-    return await this.deviceModel.find(filter).skip(skip).limit(perPage).exec();
+    return await this.deviceModel
+      .find(filter)
+      .skip(skip)
+      .limit(perPage)
+      .select('-history')
+      .exec();
   }
 
   async countDocuments(filter: FilterQuery<Device>): Promise<number> {
     return this.deviceModel.countDocuments(filter).exec();
+  }
+
+  async findByIdAndUpdate(params: {
+    deviceId: Types.ObjectId;
+    updateData: Partial<Device>;
+  }): Promise<DeviceDocument | null> {
+    return await this.deviceModel
+      .findByIdAndUpdate(params.deviceId, params.updateData, { new: true })
+      .exec();
   }
 }

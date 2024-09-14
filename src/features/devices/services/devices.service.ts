@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  Inject,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -14,13 +15,24 @@ import {
 } from '@devices/dto/get-devices.dto';
 import { Types } from 'mongoose';
 import { GetDeviceByIdRequestDto } from '@devices/dto/get-device-by-id.dto';
-import { DeviceResponseDto } from '@devices/dto/device.dto';
+import { DeviceHistoryDto, DeviceResponseDto } from '@devices/dto/device.dto';
+import {
+  ToggleDeviceStatusRequestBodyDto,
+  ToggleDeviceStatusRequestParamDto,
+} from '@devices/dto/toggle-device-status.dto';
+import {
+  DeviceHistoryDocument,
+  DeviceStatus,
+} from '@devices/schemas/device.schema';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { Logger } from 'winston';
 
 @Injectable()
 export class DevicesService {
   constructor(
     private devicesRepository: DevicesRepository,
     private usersRepository: UsersRepository,
+    @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
   ) {}
 
   async registerDevice(
@@ -112,5 +124,63 @@ export class DevicesService {
     return plainToClass(DeviceResponseDto, device.toObject(), {
       excludeExtraneousValues: true,
     });
+  }
+
+  async toggleDeviceStatus(
+    userId: string,
+    requestParamDto: ToggleDeviceStatusRequestParamDto,
+    requestBodyDto: ToggleDeviceStatusRequestBodyDto,
+  ): Promise<DeviceResponseDto> {
+    const { deviceId } = requestParamDto;
+    const { message } = requestBodyDto;
+
+    const existingUser = await this.usersRepository.findUserById(userId);
+    if (!existingUser) {
+      throw new NotFoundException('User not found');
+    }
+
+    const device = await this.devicesRepository.findOne({
+      _id: Types.ObjectId.createFromHexString(deviceId),
+      userId: Types.ObjectId.createFromHexString(userId),
+    });
+    if (!device) {
+      throw new NotFoundException('Device not found');
+    }
+
+    const newStatus =
+      device.status === DeviceStatus.ACTIVE
+        ? DeviceStatus.INACTIVE
+        : DeviceStatus.ACTIVE;
+
+    const updatedHistory = [
+      ...device.history,
+      { status: newStatus, message: message },
+    ];
+
+    const updatedDevice = await this.devicesRepository.findByIdAndUpdate({
+      deviceId: Types.ObjectId.createFromHexString(deviceId),
+      updateData: { status: newStatus, history: updatedHistory },
+    });
+    if (!updatedDevice) {
+      throw new InternalServerErrorException(
+        'Failed to toggle device status, please try again later',
+      );
+    }
+
+    return plainToClass(
+      DeviceResponseDto,
+      {
+        ...updatedDevice.toObject(),
+        history: device.history.map((hist) => {
+          return plainToClass(
+            DeviceHistoryDto,
+            (hist as DeviceHistoryDocument).toObject(),
+          );
+        }),
+      },
+      {
+        excludeExtraneousValues: true,
+      },
+    );
   }
 }

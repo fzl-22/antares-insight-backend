@@ -15,6 +15,8 @@ export enum DeviceStatus {
 
 export type DeviceDocument = HydratedDocument<Device>;
 
+export type DeviceHistoryDocument = HydratedDocument<DeviceHistory>;
+
 @Schema({ _id: false })
 export class DeviceMetric {
   @Prop({ required: true })
@@ -28,6 +30,15 @@ export class DeviceMetric {
 
   @Prop({ required: true })
   max: number;
+}
+
+@Schema({ timestamps: true })
+export class DeviceHistory {
+  @Prop({ required: true, enum: DeviceStatus })
+  status: DeviceStatus;
+
+  @Prop({ required: true })
+  message: string;
 }
 
 @Schema({ timestamps: true })
@@ -57,6 +68,9 @@ export class Device {
   // Add userId field that references the User schema
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   userId: Types.ObjectId;
+
+  @Prop({ type: [DeviceHistory], default: [] })
+  history?: DeviceHistory[];
 }
 
 export const DeviceSchema = SchemaFactory.createForClass(Device);

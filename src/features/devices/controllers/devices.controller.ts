@@ -32,6 +32,11 @@ import {
   GetDeviceByIdResponse,
 } from '@devices/dto/get-device-by-id.dto';
 import { DeviceResponseDto } from '@devices/dto/device.dto';
+import {
+  ToggleDeviceStatusRequestBodyDto,
+  ToggleDeviceStatusRequestParamDto,
+  ToggleDeviceStatusResponse,
+} from '@devices/dto/toggle-device-status.dto';
 
 @ApiTags('Devices')
 @ApiBearerAuth()
@@ -108,6 +113,31 @@ export class DevicesController {
 
     return {
       message: 'Device fetched successfully.',
+      data: response,
+    };
+  }
+
+  @ApiCreatedResponse({
+    description: 'Device status toggled successfully.',
+    type: ToggleDeviceStatusResponse,
+  })
+  @UseGuards(AuthGuard)
+  @Post('/:deviceId/toggle-status')
+  async toggleDeviceStatus(
+    @Request() request: { userId: string },
+    @Param() requestParamDto: ToggleDeviceStatusRequestParamDto,
+    @Body() requestBodyDto: ToggleDeviceStatusRequestBodyDto,
+  ): Promise<IResponse<DeviceResponseDto>> {
+    const { userId } = request;
+
+    const response = await this.devicesService.toggleDeviceStatus(
+      userId,
+      requestParamDto,
+      requestBodyDto,
+    );
+
+    return {
+      message: 'Device status toggled successfully.',
       data: response,
     };
   }
