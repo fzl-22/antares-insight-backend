@@ -1,9 +1,0 @@
-services:
-  backend:
-    build: .
-    ports:
-      - "3000:3000"
-    env_file:
-      - .env.development.local
-    volumes:
-      - ./logs:/app/logs
