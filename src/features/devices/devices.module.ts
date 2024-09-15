@@ -6,6 +6,7 @@ import { DevicesService } from '@devices/services/devices.service';
 import { DevicesController } from '@devices/controllers/devices.controller';
 import { User } from '@auth/schemas/user.schema';
 import { UsersModule } from '@users/users.module';
+import { DevicesGateway } from '@devices/gateways/devices.gateway';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { UsersModule } from '@users/users.module';
     ]),
     UsersModule,
   ],
-  providers: [DevicesRepository, DevicesService],
+  providers: [DevicesRepository, DevicesService, DevicesGateway],
   controllers: [DevicesController],
 })
 export class DevicesModule {}
