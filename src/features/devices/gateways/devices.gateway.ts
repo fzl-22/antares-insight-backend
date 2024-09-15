@@ -35,6 +35,21 @@ export class DevicesGateway implements OnModuleInit {
     });
   }
 
+  /**
+   * @event 'message'
+   * @description Handles incoming messages from clients.
+   *
+   * - **Event name:** 'message'
+   * - **Query Params:**
+   *   - `deviceId`: The ID of the device.
+   * - **Emitted Events:**
+   *   - `'onMessage'`: Emits data received from the device via MQTT.
+   *   - `'onError'`: Emits an error message in case of failure.
+   *
+   * @example
+   * // Example request
+   * http://<domain>/devices?deviceId=<deviceId>
+   */
   @UseGuards(WsAuthGuard)
   @SubscribeMessage('message')
   async handleMessage(client: Socket): Promise<void> {
