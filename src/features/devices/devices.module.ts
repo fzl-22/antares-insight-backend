@@ -7,6 +7,8 @@ import { DevicesController } from '@devices/controllers/devices.controller';
 import { User } from '@auth/schemas/user.schema';
 import { UsersModule } from '@users/users.module';
 import { DevicesGateway } from '@devices/gateways/devices.gateway';
+import { DevicesMqttService } from './services/devices.mqtt.service';
+import { UsersService } from '@users/services/users.service';
 
 @Module({
   imports: [
@@ -16,7 +18,13 @@ import { DevicesGateway } from '@devices/gateways/devices.gateway';
     ]),
     UsersModule,
   ],
-  providers: [DevicesRepository, DevicesService, DevicesGateway],
+  providers: [
+    DevicesRepository,
+    DevicesService,
+    DevicesGateway,
+    DevicesMqttService,
+    UsersService,
+  ],
   controllers: [DevicesController],
 })
 export class DevicesModule {}

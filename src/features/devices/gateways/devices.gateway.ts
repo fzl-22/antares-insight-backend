@@ -1,6 +1,7 @@
 import { WsAuthGuard } from '@core/guards/ws-auth.guard';
 import { DeviceStatus } from '@devices/schemas/device.schema';
 import { DevicesService } from '@devices/services/devices.service';
+import { DevicesMqttService } from '@devices/services/devices.mqtt.service';
 import { Inject, OnModuleInit, UseGuards } from '@nestjs/common';
 import {
   SubscribeMessage,
@@ -23,6 +24,7 @@ export class DevicesGateway implements OnModuleInit {
 
   constructor(
     private devicesService: DevicesService,
+    private mqttService: DevicesMqttService,
     @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
   ) {}
 
@@ -43,9 +45,11 @@ export class DevicesGateway implements OnModuleInit {
       const userId = client['userId'] as string;
       const deviceId = queryParams.deviceId;
 
-      const device = await this.devicesService.getDeviceById(userId, {
-        deviceId: deviceId,
-      });
+      const device = await this.devicesService.getDeviceById(
+        userId,
+        { deviceId: deviceId },
+        { selectHistory: false },
+      );
       if (device.status === DeviceStatus.INACTIVE) {
         client.emit('onError', {
           message: 'Device is inactive, please activate',
@@ -54,9 +58,25 @@ export class DevicesGateway implements OnModuleInit {
         return;
       }
 
-      client.emit('onMessage', {
-        message: 'New Message',
-        body: device,
+      const mqttClient = this.mqttService.mqttClients.get(deviceId);
+      if (!mqttClient) {
+        client.emit('onError', {
+          message: 'MQTT client not found',
+          error: 'MqttClientError',
+        });
+        return;
+      }
+
+      mqttClient.on('message', (topic, message) => {
+        const data = JSON.parse(message.toString());
+        client.emit('onMessage', {
+          message: `New data from ${deviceId}`,
+          body: {
+            device: device,
+            data: data,
+            timestamp: new Date().toISOString(),
+          },
+        });
       });
     } catch (err) {
       client.emit('onError', {

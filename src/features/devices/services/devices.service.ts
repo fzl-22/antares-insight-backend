@@ -26,12 +26,16 @@ import {
 } from '@devices/schemas/device.schema';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
+import { DevicesMqttService } from './devices.mqtt.service';
 
 @Injectable()
 export class DevicesService {
+  // public mqttClients: Map<string, mqtt.MqttClient> = new Map();
+
   constructor(
     private devicesRepository: DevicesRepository,
     private usersRepository: UsersRepository,
+    private mqttService: DevicesMqttService,
     @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
   ) {}
 
@@ -105,6 +109,7 @@ export class DevicesService {
   async getDeviceById(
     userId: string,
     getDeviceByIdDto: GetDeviceByIdRequestDto,
+    params: { selectHistory: boolean } = { selectHistory: true },
   ): Promise<DeviceResponseDto> {
     const { deviceId } = getDeviceByIdDto;
 
@@ -113,10 +118,13 @@ export class DevicesService {
       throw new NotFoundException('User not found');
     }
 
-    const device = await this.devicesRepository.findOne({
-      _id: Types.ObjectId.createFromHexString(deviceId),
-      userId: Types.ObjectId.createFromHexString(userId),
-    });
+    const device = await this.devicesRepository.findOne(
+      {
+        _id: Types.ObjectId.createFromHexString(deviceId),
+        userId: Types.ObjectId.createFromHexString(userId),
+      },
+      { selectHistory: params.selectHistory },
+    );
     if (!device) {
       throw new NotFoundException('Device not found');
     }
@@ -167,6 +175,38 @@ export class DevicesService {
       );
     }
 
+    if (newStatus === DeviceStatus.ACTIVE) {
+      this.mqttService.connectToDevice(userId, updatedDevice);
+    } else {
+      this.mqttService.disconnectDevice(deviceId);
+    }
+
+    // if (newStatus === DeviceStatus.ACTIVE) {
+    //   const client = mqtt.connect(device.connectionUrl);
+    //   client.on('connect', () => {
+    //     client.subscribe('sensor/data', (err) => {
+    //       if (err) {
+    //         this.logger.error(`Failed to subscribe: ${err.message}`);
+    //       } else {
+    //         this.logger.info(`Connected to MQTT at ${device.connectionUrl}`);
+    //       }
+    //     });
+    //   });
+
+    //   client.on('message', (topic, message) => {
+    //     this.logger.info(`Received message on ${topic}: ${message.toString()}`);
+    //     // this.handleMqttMessage(device, message.toString());
+    //   });
+
+    //   this.mqttClients.set(deviceId, client);
+    // } else {
+    //   const client = this.mqttClients.get(deviceId);
+    //   if (client) {
+    //     client.end();
+    //     this.mqttClients.delete(deviceId);
+    //   }
+    // }
+
     return plainToClass(
       DeviceResponseDto,
       {
@@ -183,4 +223,13 @@ export class DevicesService {
       },
     );
   }
+
+  // private handleMqttMessage(device: Device, message: string) {
+  //   const data = JSON.parse(message);
+  //   const metrics = device.metrics;
+
+  //   metrics.forEach((metric) => {
+
+  //   });
+  // }
 }
