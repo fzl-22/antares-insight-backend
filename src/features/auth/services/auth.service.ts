@@ -14,12 +14,14 @@ import {
 } from '@auth/dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UserResponseDto } from '@auth/dto/user.dto';
+import { MailService } from '@core/utils/notification/mail.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private authRepository: AuthRepository,
     private jwtService: JwtService,
+    private mailService: MailService,
   ) {}
 
   async registerUser(
@@ -43,6 +45,12 @@ export class AuthService {
         'Failed to register user, please try again later',
       );
     }
+
+    this.mailService.sendMail({
+      to: email,
+      subject: 'Registration successful',
+      text: 'You have successfully registered on our platform',
+    });
 
     return plainToClass(UserResponseDto, user.toObject(), {
       excludeExtraneousValues: true,

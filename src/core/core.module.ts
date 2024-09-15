@@ -1,9 +1,10 @@
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from '@core/database/database.module';
-import { TokenModule } from '@core/token/token.module';
+import { TokenModule } from '@core/utils/token/token.module';
 import { createApiKeyGuardProvider } from '@core/guards/api-key.guard';
-import { LoggerModule } from '@core/logger/logger.module';
+import { LoggerModule } from '@core/utils/logger/logger.module';
+import { MailModule } from '@core/utils/notification/mail.module';
 
 @Global()
 @Module({
@@ -15,6 +16,7 @@ import { LoggerModule } from '@core/logger/logger.module';
     DatabaseModule,
     TokenModule,
     LoggerModule,
+    MailModule,
   ],
   providers: [createApiKeyGuardProvider()],
 })

@@ -7,8 +7,9 @@ import { DevicesController } from '@devices/controllers/devices.controller';
 import { User } from '@auth/schemas/user.schema';
 import { UsersModule } from '@users/users.module';
 import { DevicesGateway } from '@devices/gateways/devices.gateway';
-import { DevicesMqttService } from './services/devices.mqtt.service';
+import { DevicesMqttService } from '@devices/services/devices.mqtt.service';
 import { UsersService } from '@users/services/users.service';
+import { MailService } from '@core/utils/notification/mail.service';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { UsersService } from '@users/services/users.service';
     DevicesGateway,
     DevicesMqttService,
     UsersService,
+    MailService,
   ],
   controllers: [DevicesController],
 })

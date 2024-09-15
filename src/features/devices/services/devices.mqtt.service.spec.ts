@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { DevicesMqttService } from './devices.mqtt.service';
+import { DevicesMqttService } from '@devices/services/devices.mqtt.service';
 
 describe('DevicesMqttService', () => {
   let service: DevicesMqttService;

@@ -26,12 +26,10 @@ import {
 } from '@devices/schemas/device.schema';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
-import { DevicesMqttService } from './devices.mqtt.service';
+import { DevicesMqttService } from '@devices/services/devices.mqtt.service';
 
 @Injectable()
 export class DevicesService {
-  // public mqttClients: Map<string, mqtt.MqttClient> = new Map();
-
   constructor(
     private devicesRepository: DevicesRepository,
     private usersRepository: UsersRepository,
@@ -176,36 +174,10 @@ export class DevicesService {
     }
 
     if (newStatus === DeviceStatus.ACTIVE) {
-      this.mqttService.connectToDevice(userId, updatedDevice);
+      this.mqttService.connectToDevice(existingUser, updatedDevice);
     } else {
       this.mqttService.disconnectDevice(deviceId);
     }
-
-    // if (newStatus === DeviceStatus.ACTIVE) {
-    //   const client = mqtt.connect(device.connectionUrl);
-    //   client.on('connect', () => {
-    //     client.subscribe('sensor/data', (err) => {
-    //       if (err) {
-    //         this.logger.error(`Failed to subscribe: ${err.message}`);
-    //       } else {
-    //         this.logger.info(`Connected to MQTT at ${device.connectionUrl}`);
-    //       }
-    //     });
-    //   });
-
-    //   client.on('message', (topic, message) => {
-    //     this.logger.info(`Received message on ${topic}: ${message.toString()}`);
-    //     // this.handleMqttMessage(device, message.toString());
-    //   });
-
-    //   this.mqttClients.set(deviceId, client);
-    // } else {
-    //   const client = this.mqttClients.get(deviceId);
-    //   if (client) {
-    //     client.end();
-    //     this.mqttClients.delete(deviceId);
-    //   }
-    // }
 
     return plainToClass(
       DeviceResponseDto,
@@ -218,18 +190,7 @@ export class DevicesService {
           );
         }),
       },
-      {
-        excludeExtraneousValues: true,
-      },
+      { excludeExtraneousValues: true },
     );
   }
-
-  // private handleMqttMessage(device: Device, message: string) {
-  //   const data = JSON.parse(message);
-  //   const metrics = device.metrics;
-
-  //   metrics.forEach((metric) => {
-
-  //   });
-  // }
 }

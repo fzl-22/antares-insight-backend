@@ -1,7 +1,9 @@
 import { Expose, Transform, Type } from 'class-transformer';
 import { IsInt, IsOptional, Min, ValidateNested } from 'class-validator';
-import { DEFAULT_PAGE, DEFAULT_PER_PAGE } from '@core/constants/constants';
 import { DeviceResponseDto } from '@devices/dto/device.dto';
+
+export const DEFAULT_PAGE = 1;
+export const DEFAULT_PER_PAGE = 10;
 
 export class GetDevicesRequestDto {
   @IsOptional()

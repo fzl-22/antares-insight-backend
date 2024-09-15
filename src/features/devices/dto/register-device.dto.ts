@@ -3,7 +3,7 @@ import {
   IsArray,
   IsEnum,
   IsNotEmpty,
-  IsUrl,
+  Matches,
   ValidateNested,
 } from 'class-validator';
 import { DeviceCategory, DeviceStatus } from '@devices/schemas/device.schema';
@@ -25,7 +25,10 @@ export class RegisterDeviceRequestDto {
    */
   @Expose()
   @IsNotEmpty()
-  @IsUrl()
+  @Matches(/^(mqtt|http|https):\/\/[^\s$.?#].[^\s]*$/i, {
+    message:
+      'connectionUrl must be a valid URL with mqtt, http, or https protocol',
+  })
   readonly connectionUrl: string;
 
   /**

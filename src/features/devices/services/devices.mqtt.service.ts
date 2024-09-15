@@ -1,6 +1,7 @@
+import { User } from '@auth/schemas/user.schema';
+import { MailService } from '@core/utils/notification/mail.service';
 import { DeviceDocument, DeviceMetric } from '@devices/schemas/device.schema';
 import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
-import { UsersService } from '@users/services/users.service';
 import { connect, MqttClient } from 'mqtt';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
@@ -10,11 +11,11 @@ export class DevicesMqttService implements OnModuleDestroy {
   public mqttClients: Map<string, MqttClient> = new Map();
 
   constructor(
-    private usersService: UsersService,
+    private mailService: MailService,
     @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
   ) {}
 
-  connectToDevice(userId: string, device: DeviceDocument): MqttClient {
+  connectToDevice(user: User, device: DeviceDocument): MqttClient {
     const deviceId = device._id.toString();
     const connectionUrl = device.connectionUrl;
 
@@ -43,7 +44,7 @@ export class DevicesMqttService implements OnModuleDestroy {
 
       client.on('message', (topic, message) => {
         const data = JSON.parse(message.toString());
-        this.processDeviceData(userId, device.metrics, data);
+        this.processDeviceData(user, device.metrics, data);
         this.logger.info(`Device ${deviceId} sent ${data}`, {
           context: 'MQTT',
         });
@@ -57,27 +58,39 @@ export class DevicesMqttService implements OnModuleDestroy {
     return client;
   }
 
-  processDeviceData(userId: string, metrics: DeviceMetric[], data: any) {
+  processDeviceData(user: User, metrics: DeviceMetric[], data: any) {
     metrics.forEach((metric) => {
       const value = data[metric.metric];
       if (value < metric.min || value > metric.max) {
-        this.sendAlertEmail(userId, value, metric);
+        this.sendAlertEmail(user, value, metric);
       }
     });
   }
 
   async sendAlertEmail(
-    userId: string,
+    user: User,
     value: number,
     metric: DeviceMetric,
   ): Promise<void> {
-    const user = await this.usersService.getCurrentUser({ userId: userId });
     this.logger.warn(
       `Device exceeded limit: ${value} ${metric.unit}. Sending email to ${user.email}, `,
-      {
-        context: 'MQTT',
-      },
+      { context: 'MQTT' },
     );
+    const formattedDateTime = new Date().toLocaleString('id-ID', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric',
+      hour12: false,
+    });
+
+    this.mailService.sendMail({
+      to: user.email,
+      subject: 'Device Alert',
+      text: `The ${metric.metric} is out of range. Current value: ${value} ${metric.unit}.\n\nThis event occurred at ${formattedDateTime}.\n\nPlease take appropriate action to resolve the issue.`,
+    });
   }
 
   disconnectDevice(deviceId: string) {
