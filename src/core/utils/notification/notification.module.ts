@@ -1,7 +1,23 @@
 import { MailerModule } from '@nestjs-modules/mailer';
-import { Module } from '@nestjs/common';
+import { Module, Provider } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { MailService } from '@core/utils/notification/mail.service';
+import { MailNotificationService } from '@core/utils/notification/mail-notification.service';
+import * as admin from 'firebase-admin';
+
+export const firebaseAdminProvider: Provider = {
+  provide: 'FIREBASE_ADMIN',
+  useFactory: () => {
+    const defaultApp = admin.initializeApp({
+      credential: admin.credential.cert({
+        projectId: process.env.FIREBASE_PROJECT_ID,
+        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+      }),
+    });
+
+    return { defaultApp };
+  },
+};
 
 @Module({
   imports: [
@@ -26,6 +42,6 @@ import { MailService } from '@core/utils/notification/mail.service';
       },
     }),
   ],
-  providers: [MailService],
+  providers: [MailNotificationService, firebaseAdminProvider],
 })
-export class MailModule {}
+export class NotificationModule {}

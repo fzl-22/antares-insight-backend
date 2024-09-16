@@ -1,5 +1,6 @@
 import { User } from '@auth/schemas/user.schema';
-import { MailService } from '@core/utils/notification/mail.service';
+import { FirebaseNotificationService } from '@core/utils/notification/firebase-notification.service';
+import { MailNotificationService } from '@core/utils/notification/mail-notification.service';
 import { DeviceDocument, DeviceMetric } from '@devices/schemas/device.schema';
 import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
 import { connect, MqttClient } from 'mqtt';
@@ -11,7 +12,8 @@ export class DevicesMqttService implements OnModuleDestroy {
   public mqttClients: Map<string, MqttClient> = new Map();
 
   constructor(
-    private mailService: MailService,
+    private mailService: MailNotificationService,
+    private fcmService: FirebaseNotificationService,
     @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
   ) {}
 
@@ -44,7 +46,7 @@ export class DevicesMqttService implements OnModuleDestroy {
 
       client.on('message', (topic, message) => {
         const data = JSON.parse(message.toString());
-        this.processDeviceData(user, device.metrics, data);
+        this.processDeviceData(user, device.name, device.metrics, data);
         this.logger.info(`Device ${deviceId} sent ${data}`, {
           context: 'MQTT',
         });
@@ -58,17 +60,23 @@ export class DevicesMqttService implements OnModuleDestroy {
     return client;
   }
 
-  processDeviceData(user: User, metrics: DeviceMetric[], data: any) {
+  processDeviceData(
+    user: User,
+    deviceName: string,
+    metrics: DeviceMetric[],
+    data: any,
+  ) {
     metrics.forEach((metric) => {
       const value = data[metric.metric];
       if (value < metric.min || value > metric.max) {
-        this.sendAlertEmail(user, value, metric);
+        this.sendNotification(user, deviceName, value, metric);
       }
     });
   }
 
-  async sendAlertEmail(
+  async sendNotification(
     user: User,
+    deviceName: string,
     value: number,
     metric: DeviceMetric,
   ): Promise<void> {
@@ -76,7 +84,7 @@ export class DevicesMqttService implements OnModuleDestroy {
       `Device exceeded limit: ${value} ${metric.unit}. Sending email to ${user.email}, `,
       { context: 'MQTT' },
     );
-    const formattedDateTime = new Date().toLocaleString('id-ID', {
+    const formattedDateTime = new Date().toLocaleString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -86,10 +94,21 @@ export class DevicesMqttService implements OnModuleDestroy {
       hour12: false,
     });
 
+    const title = 'Device Alert';
+    const message = `The ${deviceName}'s ${metric.metric} is out of range. Current value: ${value} ${metric.unit}.\n\nThis event occurred at ${formattedDateTime}.\n\nPlease take appropriate action to resolve the issue.`;
+
+    if (user.fcmToken) {
+      this.fcmService.sendPushNotification({
+        fcmToken: user.fcmToken,
+        title: title,
+        body: message,
+      });
+    }
+
     this.mailService.sendMail({
       to: user.email,
-      subject: 'Device Alert',
-      text: `The ${metric.metric} is out of range. Current value: ${value} ${metric.unit}.\n\nThis event occurred at ${formattedDateTime}.\n\nPlease take appropriate action to resolve the issue.`,
+      subject: title,
+      text: message,
     });
   }
 

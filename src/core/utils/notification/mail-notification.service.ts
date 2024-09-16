@@ -3,7 +3,7 @@ import { Inject } from '@nestjs/common';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 
-export class MailService {
+export class MailNotificationService {
   constructor(
     private mailerService: MailerService,
     @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,

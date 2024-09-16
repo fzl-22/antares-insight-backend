@@ -18,6 +18,13 @@ export class LoginUserRequestDto {
   @Expose({ name: 'password' })
   @IsNotEmpty()
   readonly password: string;
+
+  /**
+   * User device's (Android) FCM token
+   */
+  @Expose({ name: 'fcmToken' })
+  @IsNotEmpty()
+  readonly fcmToken: string;
 }
 
 export class LoginUserResponseDto {

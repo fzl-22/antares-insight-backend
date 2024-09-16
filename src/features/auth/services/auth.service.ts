@@ -14,14 +14,16 @@ import {
 } from '@auth/dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UserResponseDto } from '@auth/dto/user.dto';
-import { MailService } from '@core/utils/notification/mail.service';
+import { MailNotificationService } from '@core/utils/notification/mail-notification.service';
+import { FirebaseNotificationService } from '@core/utils/notification/firebase-notification.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private authRepository: AuthRepository,
     private jwtService: JwtService,
-    private mailService: MailService,
+    private mailService: MailNotificationService,
+    private fcmService: FirebaseNotificationService,
   ) {}
 
   async registerUser(
@@ -60,7 +62,7 @@ export class AuthService {
   async loginUser(
     loginUserDto: LoginUserRequestDto,
   ): Promise<LoginUserResponseDto> {
-    const { email, password } = loginUserDto;
+    const { email, password, fcmToken } = loginUserDto;
 
     const user = await this.authRepository.findOne({ email: email });
     if (!user) {
@@ -74,6 +76,17 @@ export class AuthService {
 
     const payload = { userId: user._id.toString(), email: user.email };
     const token = await this.jwtService.signAsync(payload);
+
+    const updatedUser = await this.authRepository.update(
+      { _id: user._id },
+      { fcmToken: fcmToken },
+    );
+
+    this.fcmService.sendPushNotification({
+      fcmToken: updatedUser.fcmToken,
+      title: 'Welcome',
+      body: 'You have successfully logged in!',
+    });
 
     const userResponse = plainToInstance(UserResponseDto, user.toObject());
 
