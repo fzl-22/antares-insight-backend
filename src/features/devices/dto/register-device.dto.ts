@@ -1,4 +1,4 @@
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude, Expose, Type } from 'class-transformer';
 import {
   IsArray,
   IsEnum,
@@ -55,6 +55,7 @@ export class RegisterDeviceRequestDto {
   })
   @Expose()
   @IsArray()
+  @Type(() => DeviceMetricDto)
   @ValidateNested({ each: true })
   readonly metrics: DeviceMetricDto[];
 

@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
   Query,
   Request,
@@ -37,6 +38,10 @@ import {
   ToggleDeviceStatusRequestParamDto,
   ToggleDeviceStatusResponse,
 } from '@devices/dto/toggle-device-status.dto';
+import {
+  UpdateDeviceRequestBodyDto,
+  UpdateDeviceRequestParamDto,
+} from '@devices/dto/update-device.dto';
 
 @ApiTags('Devices')
 @ApiBearerAuth()
@@ -138,6 +143,27 @@ export class DevicesController {
 
     return {
       message: 'Device status toggled successfully.',
+      data: response,
+    };
+  }
+
+  @UseGuards(AuthGuard)
+  @Patch('/:deviceId/update')
+  async updateDevice(
+    @Request() request: { userId: string },
+    @Param() requestParamDto: UpdateDeviceRequestParamDto,
+    @Body() requestBodyDto: UpdateDeviceRequestBodyDto,
+  ): Promise<IResponse<DeviceResponseDto>> {
+    const { userId } = request;
+    const response = await this.devicesService.updateDevice(
+      userId,
+      requestParamDto,
+      requestBodyDto,
+    );
+
+    return {
+      message:
+        'Device updated successfully. Please restart your device connection in the application.',
       data: response,
     };
   }

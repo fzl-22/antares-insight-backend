@@ -1,7 +1,13 @@
 import { DeviceCategory, DeviceStatus } from '@devices/schemas/device.schema';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Transform } from 'class-transformer';
-import { IsNotEmpty, IsEnum, ValidateNested, IsNumber } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsEnum,
+  ValidateNested,
+  IsNumber,
+  IsDefined,
+} from 'class-validator';
 import { Types } from 'mongoose';
 
 export class DeviceMetricDto {
@@ -10,6 +16,7 @@ export class DeviceMetricDto {
    * @example 'Voltage'
    */
   @Expose()
+  @IsDefined()
   @IsNotEmpty()
   readonly metric: string;
 
@@ -18,6 +25,7 @@ export class DeviceMetricDto {
    * @example 'V' for volts
    */
   @Expose()
+  @IsDefined()
   @IsNotEmpty()
   readonly unit: string;
 
@@ -26,6 +34,7 @@ export class DeviceMetricDto {
    * @example 0
    */
   @Expose()
+  @IsDefined()
   @IsNotEmpty()
   @IsNumber()
   readonly min: number;
@@ -35,6 +44,7 @@ export class DeviceMetricDto {
    * @example 250
    */
   @Expose()
+  @IsDefined()
   @IsNotEmpty()
   @IsNumber()
   readonly max: number;
