@@ -19,7 +19,7 @@ This repository contains the proof of concept of [Antares'](https://antares.id) 
 
 ## Architectural Overview
 
-![Antares Insight - Architectural Overview](./assets/readme/antares-insight-architectural-overview.png)
+![Antares Insight - Architectural Overview](./assets/readme/architectural-overview.png)
 
 ## Project setup
 
