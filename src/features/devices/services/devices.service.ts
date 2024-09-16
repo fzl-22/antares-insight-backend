@@ -218,17 +218,37 @@ export class DevicesService {
       throw new NotFoundException('Device not found');
     }
 
-    // deactivate device if successfully updated
+    const newStatus = DeviceStatus.INACTIVE;
+    const updatedHistory = [
+      ...existingDevice.history,
+      { status: newStatus, message: 'Deactivated because of device update' },
+    ];
+
+    // deactivate existingDevice if successfully updated
     const updatedDevice = await this.devicesRepository.findByIdAndUpdate({
       deviceId: Types.ObjectId.createFromHexString(deviceId),
-      updateData: { ...requestBodyDto, status: DeviceStatus.INACTIVE },
+      updateData: {
+        ...requestBodyDto,
+        status: DeviceStatus.INACTIVE,
+        history: updatedHistory,
+      },
     });
 
     // disconnect to device is successfully updated to prevent unwanted scenario
     this.mqttService.disconnectDevice(deviceId);
 
-    return plainToClass(DeviceResponseDto, updatedDevice.toObject(), {
-      excludeExtraneousValues: true,
-    });
+    return plainToClass(
+      DeviceResponseDto,
+      {
+        ...updatedDevice.toObject(),
+        history: updatedDevice.history.map((hist) => {
+          return plainToClass(
+            DeviceHistoryDto,
+            (hist as DeviceHistoryDocument).toObject(),
+          );
+        }),
+      },
+      { excludeExtraneousValues: true },
+    );
   }
 }
