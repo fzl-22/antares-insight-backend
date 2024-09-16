@@ -98,7 +98,7 @@ export class DevicesMqttService implements OnModuleDestroy {
     const title = 'Device Alert';
     const message = `The ${deviceName}'s ${metric.metric} is out of range. Current value: ${value} ${metric.unit}.\n\nThis event occurred at ${formattedDateTime}.\n\nPlease take appropriate action to resolve the issue.`;
 
-    if (user.fcmToken) {
+    if (user.fcmToken && user.configuration?.enableFcmNotification) {
       this.fcmService.sendPushNotification({
         fcmToken: user.fcmToken,
         title: title,
@@ -106,11 +106,13 @@ export class DevicesMqttService implements OnModuleDestroy {
       });
     }
 
-    this.mailService.sendMail({
-      to: user.email,
-      subject: title,
-      text: message,
-    });
+    if (user.configuration?.enableMailNotification) {
+      this.mailService.sendMail({
+        to: user.email,
+        subject: title,
+        text: message,
+      });
+    }
 
     this.logger.warn(message, { context: 'MQTT' });
   }

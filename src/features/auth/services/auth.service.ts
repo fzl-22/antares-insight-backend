@@ -54,9 +54,13 @@ export class AuthService {
       text: 'You have successfully registered on our platform',
     });
 
-    return plainToClass(UserResponseDto, user.toObject(), {
-      excludeExtraneousValues: true,
-    });
+    return plainToClass(
+      UserResponseDto,
+      { ...user.toObject(), configuration: undefined },
+      {
+        excludeExtraneousValues: true,
+      },
+    );
   }
 
   async loginUser(

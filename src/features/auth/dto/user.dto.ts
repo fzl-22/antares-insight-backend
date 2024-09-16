@@ -1,6 +1,20 @@
 import { ApiHideProperty } from '@nestjs/swagger';
 import { Expose, Exclude, Transform } from 'class-transformer';
 
+export class UserConfigurationDto {
+  /**
+   * User configuration for enable/disable mobile notification
+   */
+  @Expose()
+  readonly enableFcmNotification: boolean;
+
+  /**
+   * User configuration for enable/disable email notification
+   */
+  @Expose()
+  readonly enableMailNotification: boolean;
+}
+
 export class UserResponseDto {
   /**
    * User's document id
@@ -44,6 +58,12 @@ export class UserResponseDto {
    */
   @Expose()
   readonly updatedAt: Date;
+
+  /**
+   * User's configuration
+   */
+  @Expose()
+  readonly configuration?: UserConfigurationDto;
 
   @ApiHideProperty()
   @Exclude()
