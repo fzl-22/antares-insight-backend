@@ -179,7 +179,7 @@ export class DevicesService {
     }
 
     if (newStatus === DeviceStatus.ACTIVE) {
-      this.mqttService.connectToDevice(existingUser, updatedDevice);
+      this.mqttService.connectToDevice(userId, updatedDevice);
     } else {
       this.mqttService.disconnectDevice(deviceId);
     }

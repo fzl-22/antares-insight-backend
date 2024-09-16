@@ -1,8 +1,8 @@
-import { User } from '@auth/schemas/user.schema';
 import { FirebaseNotificationService } from '@core/utils/notification/firebase-notification.service';
 import { MailNotificationService } from '@core/utils/notification/mail-notification.service';
 import { DeviceDocument, DeviceMetric } from '@devices/schemas/device.schema';
 import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
+import { UsersRepository } from '@users/repositories/users.repository';
 import { connect, MqttClient } from 'mqtt';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
@@ -14,10 +14,12 @@ export class DevicesMqttService implements OnModuleDestroy {
   constructor(
     private mailService: MailNotificationService,
     private fcmService: FirebaseNotificationService,
+    private usersRepository: UsersRepository,
     @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
   ) {}
 
-  connectToDevice(user: User, device: DeviceDocument): MqttClient {
+  // provides only userId to prevent late update on email / fcm notification
+  connectToDevice(userId: string, device: DeviceDocument): MqttClient {
     const deviceId = device._id.toString();
     const connectionUrl = device.connectionUrl;
 
@@ -46,7 +48,7 @@ export class DevicesMqttService implements OnModuleDestroy {
 
       client.on('message', (topic, message) => {
         const data = JSON.parse(message.toString());
-        this.processDeviceData(user, device.name, device.metrics, data);
+        this.processDeviceData(userId, device.name, device.metrics, data);
         this.logger.info(`Device ${deviceId} sent ${data}`, {
           context: 'MQTT',
         });
@@ -61,7 +63,7 @@ export class DevicesMqttService implements OnModuleDestroy {
   }
 
   processDeviceData(
-    user: User,
+    userId: string,
     deviceName: string,
     metrics: DeviceMetric[],
     data: any,
@@ -69,21 +71,20 @@ export class DevicesMqttService implements OnModuleDestroy {
     metrics.forEach((metric) => {
       const value = data[metric.metric];
       if (value < metric.min || value > metric.max) {
-        this.sendNotification(user, deviceName, value, metric);
+        this.sendNotification(userId, deviceName, value, metric);
       }
     });
   }
 
   async sendNotification(
-    user: User,
+    userId: string,
     deviceName: string,
     value: number,
     metric: DeviceMetric,
   ): Promise<void> {
-    this.logger.warn(
-      `Device exceeded limit: ${value} ${metric.unit}. Sending email to ${user.email}, `,
-      { context: 'MQTT' },
-    );
+    // always fetch user data to prevent send notification mismatch
+    const user = await this.usersRepository.findUserById(userId);
+
     const formattedDateTime = new Date().toLocaleString('en-US', {
       year: 'numeric',
       month: 'long',
@@ -110,6 +111,8 @@ export class DevicesMqttService implements OnModuleDestroy {
       subject: title,
       text: message,
     });
+
+    this.logger.warn(message, { context: 'MQTT' });
   }
 
   disconnectDevice(deviceId: string) {
