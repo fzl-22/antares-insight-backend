@@ -99,4 +99,13 @@ export class AuthService {
       { excludeExtraneousValues: true },
     );
   }
+
+  async logoutUser(userId: string): Promise<boolean> {
+    const updatedUser = await this.authRepository.update(
+      { _id: userId },
+      { fcmToken: null },
+    );
+
+    return !!updatedUser;
+  }
 }

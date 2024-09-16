@@ -1,4 +1,11 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import {
   RegisterUserRequestDto,
   RegisterUserResponse,
@@ -10,8 +17,10 @@ import {
   LoginUserResponseDto,
 } from '@auth/dto/login-user.dto';
 import { IResponse } from '@core/interfaces/interfaces';
-import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { UserResponseDto } from '@auth/dto/user.dto';
+import { AuthGuard } from '@core/guards/auth.guard';
+import { LogoutUserResponse } from '@auth/dto/logout-user.dto';
 
 @ApiTags('Auth')
 @Controller('/auth')
@@ -45,6 +54,25 @@ export class AuthController {
 
     return {
       message: 'User logged in successfully.',
+      data: response,
+    };
+  }
+
+  @ApiOkResponse({
+    description: 'User logged out successfully.',
+    type: LogoutUserResponse,
+  })
+  @UseGuards(AuthGuard)
+  @Delete('/logout')
+  async logoutUser(
+    @Request() request: { userId: string },
+  ): Promise<IResponse<boolean>> {
+    const { userId } = request;
+
+    const response = await this.authService.logoutUser(userId);
+
+    return {
+      message: 'User logged out successfully.',
       data: response,
     };
   }
