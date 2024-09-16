@@ -92,7 +92,7 @@ export class UpdateDeviceRequestBodyDto {
   readonly _id?: Types.ObjectId;
 }
 
-export class RegisterDeviceResponse {
+export class UpdateDeviceResponse {
   /**
    * Response status code
    * @example 201

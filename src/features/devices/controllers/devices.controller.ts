@@ -41,6 +41,7 @@ import {
 import {
   UpdateDeviceRequestBodyDto,
   UpdateDeviceRequestParamDto,
+  UpdateDeviceResponse,
 } from '@devices/dto/update-device.dto';
 
 @ApiTags('Devices')
@@ -147,6 +148,10 @@ export class DevicesController {
     };
   }
 
+  @ApiOkResponse({
+    description: 'Device updated successfully.',
+    type: UpdateDeviceResponse,
+  })
   @UseGuards(AuthGuard)
   @Patch('/:deviceId/update')
   async updateDevice(
