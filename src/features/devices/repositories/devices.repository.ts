@@ -53,4 +53,8 @@ export class DevicesRepository {
       .findByIdAndUpdate(params.deviceId, params.updateData, { new: true })
       .exec();
   }
+
+  async deleteOne(filter: FilterQuery<Device>): Promise<DeviceDocument | null> {
+    return await this.deviceModel.findOneAndDelete(filter);
+  }
 }

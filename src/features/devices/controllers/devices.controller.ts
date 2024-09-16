@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -43,6 +44,10 @@ import {
   UpdateDeviceRequestParamDto,
   UpdateDeviceResponse,
 } from '@devices/dto/update-device.dto';
+import {
+  DeleteDeviceRequestDto,
+  DeleteDeviceResponse,
+} from '@devices/dto/delete-device.dto';
 
 @ApiTags('Devices')
 @ApiBearerAuth()
@@ -169,6 +174,28 @@ export class DevicesController {
     return {
       message:
         'Device updated successfully. Please restart your device connection in the application.',
+      data: response,
+    };
+  }
+
+  @ApiOkResponse({
+    description: 'Device deleted successfully.',
+    type: DeleteDeviceResponse,
+  })
+  @UseGuards(AuthGuard)
+  @Delete('/:deviceId/delete')
+  async deleteDevice(
+    @Request() request: { userId: string },
+    @Param() requestParamDto: DeleteDeviceRequestDto,
+  ): Promise<IResponse<boolean>> {
+    const { userId } = request;
+    const response = await this.devicesService.deleteDevice(
+      userId,
+      requestParamDto,
+    );
+
+    return {
+      message: 'Device deleted successfully.',
       data: response,
     };
   }

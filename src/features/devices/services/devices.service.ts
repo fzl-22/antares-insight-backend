@@ -31,6 +31,7 @@ import {
   UpdateDeviceRequestBodyDto,
   UpdateDeviceRequestParamDto,
 } from '@devices/dto/update-device.dto';
+import { DeleteDeviceRequestDto } from '@devices/dto/delete-device.dto';
 
 @Injectable()
 export class DevicesService {
@@ -250,5 +251,29 @@ export class DevicesService {
       },
       { excludeExtraneousValues: true },
     );
+  }
+
+  async deleteDevice(
+    userId: string,
+    requestParamDto: DeleteDeviceRequestDto,
+  ): Promise<boolean> {
+    const { deviceId } = requestParamDto;
+
+    const existingUser = await this.usersRepository.findUserById(userId);
+    if (!existingUser) {
+      throw new NotFoundException('User not found');
+    }
+
+    const existingDevice = await this.devicesRepository.deleteOne({
+      _id: Types.ObjectId.createFromHexString(deviceId),
+      userId: Types.ObjectId.createFromHexString(userId),
+    });
+    if (!existingDevice) {
+      throw new NotFoundException('Device not found');
+    }
+
+    this.mqttService.disconnectDevice(deviceId);
+
+    return existingDevice ? true : false;
   }
 }
