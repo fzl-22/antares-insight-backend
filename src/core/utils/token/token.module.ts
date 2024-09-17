@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 
 const getJwtConfig = (configService: ConfigService): JwtModuleOptions => {
@@ -16,7 +16,6 @@ const getJwtConfig = (configService: ConfigService): JwtModuleOptions => {
   imports: [
     JwtModule.registerAsync({
       global: true,
-      imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: getJwtConfig,
     }),

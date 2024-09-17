@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { MongooseModuleOptions } from '@nestjs/mongoose';
 
@@ -28,7 +28,6 @@ const getMongooseConfig = async (
 @Module({
   imports: [
     MongooseModule.forRootAsync({
-      imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: getMongooseConfig,
     }),
