@@ -11,6 +11,8 @@ import { DevicesMqttService } from '@devices/services/devices.mqtt.service';
 import { UsersService } from '@users/services/users.service';
 import { MailNotificationService } from '@core/utils/notification/mail-notification.service';
 import { PushNotificationService } from '@core/utils/notification/push-notification.service';
+import { UsersRepository } from '@users/repositories/users.repository';
+import { AuthRepository } from '@auth/repositories/auth.repository';
 
 @Module({
   imports: [
@@ -25,7 +27,9 @@ import { PushNotificationService } from '@core/utils/notification/push-notificat
     DevicesService,
     DevicesGateway,
     DevicesMqttService,
+    AuthRepository,
     UsersService,
+    UsersRepository,
     MailNotificationService,
     PushNotificationService,
   ],

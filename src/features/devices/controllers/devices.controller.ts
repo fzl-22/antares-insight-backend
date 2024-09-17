@@ -15,7 +15,7 @@ import {
   RegisterDeviceResponse,
 } from '@devices/dto/register-device.dto';
 import { IResponse } from '@core/interfaces/interfaces';
-import { AuthGuard } from '@core/guards/auth.guard';
+import { AuthGuard } from '@auth/guards/auth.guard';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import {
   GetDevicesRequestDto,

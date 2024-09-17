@@ -10,7 +10,7 @@ import {
   GetCurrentUserRequestDto,
   GetCurrentUserResponse,
 } from '@users/dto/get-current-user.dto';
-import { AuthGuard } from '@core/guards/auth.guard';
+import { AuthGuard } from '@auth/guards/auth.guard';
 import { IResponse } from '@core/interfaces/interfaces';
 import { UsersService } from '@users/services/users.service';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';

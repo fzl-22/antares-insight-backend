@@ -19,7 +19,7 @@ import {
 import { IResponse } from '@core/interfaces/interfaces';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { UserResponseDto } from '@auth/dto/user.dto';
-import { AuthGuard } from '@core/guards/auth.guard';
+import { AuthGuard } from '@auth/guards/auth.guard';
 import { LogoutUserResponse } from '@auth/dto/logout-user.dto';
 import { ApiAuthorizationHeader } from '@core/decorators/api-authorization-header.decorator';
 

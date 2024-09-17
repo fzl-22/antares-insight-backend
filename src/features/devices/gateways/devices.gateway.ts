@@ -1,4 +1,4 @@
-import { WsAuthGuard } from '@core/guards/ws-auth.guard';
+import { WsAuthGuard } from '@auth/guards/ws-auth.guard';
 import { DeviceStatus } from '@devices/schemas/device.schema';
 import { DevicesService } from '@devices/services/devices.service';
 import { DevicesMqttService } from '@devices/services/devices.mqtt.service';
