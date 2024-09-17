@@ -1,4 +1,11 @@
-import { Controller, Get, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Patch,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import {
   GetCurrentUserRequestDto,
   GetCurrentUserResponse,
@@ -6,13 +13,14 @@ import {
 import { AuthGuard } from '@core/guards/auth.guard';
 import { IResponse } from '@core/interfaces/interfaces';
 import { UsersService } from '@users/services/users.service';
-import {
-  ApiBearerAuth,
-  ApiHeader,
-  ApiOkResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { UserResponseDto } from '@auth/dto/user.dto';
+import {
+  UpdateUserRequestDto,
+  UpdateUserResponse,
+} from '@users/dto/update-user.dto';
+import { UserId } from '@core/decorators/user-id.decorator';
+import { ApiAuthorizationHeader } from '@core/decorators/api-authorization-header.decorator';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -20,15 +28,7 @@ import { UserResponseDto } from '@auth/dto/user.dto';
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
-  @ApiHeader({
-    name: 'Authorization',
-    description: 'JWT token for authentication',
-    required: true,
-    schema: {
-      type: 'string',
-      example: 'my.jwt.token',
-    },
-  })
+  @ApiAuthorizationHeader()
   @ApiOkResponse({
     description: 'User fetched successfully.',
     type: GetCurrentUserResponse,
@@ -43,6 +43,25 @@ export class UsersController {
     return {
       message: 'User fetched successfully.',
       data: user,
+    };
+  }
+
+  @ApiAuthorizationHeader()
+  @ApiOkResponse({
+    description: 'User updated successfully.',
+    type: UpdateUserResponse,
+  })
+  @UseGuards(AuthGuard)
+  @Patch('/update')
+  async updateUser(
+    @UserId() userId: string,
+    @Body() updateUserDto: UpdateUserRequestDto,
+  ): Promise<IResponse<UserResponseDto>> {
+    const response = await this.usersService.updateUser(userId, updateUserDto);
+
+    return {
+      message: 'User updated successfully.',
+      data: response,
     };
   }
 }

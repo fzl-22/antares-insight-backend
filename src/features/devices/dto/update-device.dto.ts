@@ -86,10 +86,6 @@ export class UpdateDeviceRequestBodyDto {
   @ApiHideProperty()
   @Exclude()
   readonly history?: DeviceHistory[];
-
-  @ApiHideProperty()
-  @Exclude()
-  readonly _id?: Types.ObjectId;
 }
 
 export class UpdateDeviceResponse {
