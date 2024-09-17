@@ -7,7 +7,6 @@ import {
   Patch,
   Post,
   Query,
-  Request,
   UseGuards,
 } from '@nestjs/common';
 import { DevicesService } from '@devices/services/devices.service';
@@ -17,13 +16,7 @@ import {
 } from '@devices/dto/register-device.dto';
 import { IResponse } from '@core/interfaces/interfaces';
 import { AuthGuard } from '@core/guards/auth.guard';
-import {
-  ApiBearerAuth,
-  ApiCreatedResponse,
-  ApiHeader,
-  ApiOkResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import {
   GetDevicesRequestDto,
   GetDevicesResponse,
@@ -35,31 +28,19 @@ import {
 } from '@devices/dto/get-device-by-id.dto';
 import { DeviceResponseDto } from '@devices/dto/device.dto';
 import {
-  ToggleDeviceStatusRequestBodyDto,
-  ToggleDeviceStatusRequestParamDto,
+  ToggleDeviceStatusRequestDto,
   ToggleDeviceStatusResponse,
 } from '@devices/dto/toggle-device-status.dto';
 import {
-  UpdateDeviceRequestBodyDto,
-  UpdateDeviceRequestParamDto,
+  UpdateDeviceRequestDto,
   UpdateDeviceResponse,
 } from '@devices/dto/update-device.dto';
-import {
-  DeleteDeviceRequestDto,
-  DeleteDeviceResponse,
-} from '@devices/dto/delete-device.dto';
+import { DeleteDeviceResponse } from '@devices/dto/delete-device.dto';
+import { ApiAuthorizationHeader } from '@core/decorators/api-authorization-header.decorator';
+import { UserId } from '@core/decorators/user-id.decorator';
 
 @ApiTags('Devices')
-@ApiBearerAuth()
-@ApiHeader({
-  name: 'Authorization',
-  description: 'JWT token for authentication',
-  required: true,
-  schema: {
-    type: 'string',
-    example: 'my.jwt.token',
-  },
-})
+@ApiAuthorizationHeader()
 @Controller('devices')
 export class DevicesController {
   constructor(private devicesService: DevicesService) {}
@@ -71,10 +52,9 @@ export class DevicesController {
   @UseGuards(AuthGuard)
   @Post('/register')
   async registerDevice(
-    @Request() request: { userId: string },
+    @UserId() userId: string,
     @Body() registerDeviceDto: RegisterDeviceRequestDto,
   ): Promise<IResponse<DeviceResponseDto>> {
-    const { userId } = request;
     const response = await this.devicesService.registerDevice(
       userId,
       registerDeviceDto,
@@ -93,11 +73,11 @@ export class DevicesController {
   @UseGuards(AuthGuard)
   @Get('/')
   async getDevices(
-    @Request() request: { userId: string },
+    @UserId() userId: string,
     @Query() getDevicesDto: GetDevicesRequestDto,
   ): Promise<IResponse<GetDevicesResponseDto>> {
     const response = await this.devicesService.getDevices(
-      request.userId,
+      userId,
       getDevicesDto,
     );
 
@@ -114,11 +94,11 @@ export class DevicesController {
   @UseGuards(AuthGuard)
   @Get('/:deviceId')
   async getDeviceById(
-    @Request() request: { userId: string },
+    @UserId() userId: string,
     @Param() getDeviceByIdDto: GetDeviceByIdRequestDto,
   ) {
     const response = await this.devicesService.getDeviceById(
-      request.userId,
+      userId,
       getDeviceByIdDto,
     );
 
@@ -135,15 +115,13 @@ export class DevicesController {
   @UseGuards(AuthGuard)
   @Post('/:deviceId/toggle-status')
   async toggleDeviceStatus(
-    @Request() request: { userId: string },
-    @Param() requestParamDto: ToggleDeviceStatusRequestParamDto,
-    @Body() requestBodyDto: ToggleDeviceStatusRequestBodyDto,
+    @UserId() userId: string,
+    @Param('deviceId') deviceId: string,
+    @Body() requestBodyDto: ToggleDeviceStatusRequestDto,
   ): Promise<IResponse<DeviceResponseDto>> {
-    const { userId } = request;
-
     const response = await this.devicesService.toggleDeviceStatus(
       userId,
-      requestParamDto,
+      deviceId,
       requestBodyDto,
     );
 
@@ -160,14 +138,13 @@ export class DevicesController {
   @UseGuards(AuthGuard)
   @Patch('/:deviceId/update')
   async updateDevice(
-    @Request() request: { userId: string },
-    @Param() requestParamDto: UpdateDeviceRequestParamDto,
-    @Body() requestBodyDto: UpdateDeviceRequestBodyDto,
+    @UserId() userId: string,
+    @Param('deviceId') deviceId: string,
+    @Body() requestBodyDto: UpdateDeviceRequestDto,
   ): Promise<IResponse<DeviceResponseDto>> {
-    const { userId } = request;
     const response = await this.devicesService.updateDevice(
       userId,
-      requestParamDto,
+      deviceId,
       requestBodyDto,
     );
 
@@ -185,14 +162,10 @@ export class DevicesController {
   @UseGuards(AuthGuard)
   @Delete('/:deviceId/delete')
   async deleteDevice(
-    @Request() request: { userId: string },
-    @Param() requestParamDto: DeleteDeviceRequestDto,
+    @UserId() userId: string,
+    @Param('deviceId') deviceId: string,
   ): Promise<IResponse<boolean>> {
-    const { userId } = request;
-    const response = await this.devicesService.deleteDevice(
-      userId,
-      requestParamDto,
-    );
+    const response = await this.devicesService.deleteDevice(userId, deviceId);
 
     return {
       message: 'Device deleted successfully.',

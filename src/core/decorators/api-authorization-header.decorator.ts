@@ -1,8 +1,9 @@
 import { applyDecorators } from '@nestjs/common';
-import { ApiHeader } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiHeader } from '@nestjs/swagger';
 
 export function ApiAuthorizationHeader() {
   return applyDecorators(
+    ApiBearerAuth(),
     ApiHeader({
       name: 'Authorization',
       description: 'JWT token for authentication',

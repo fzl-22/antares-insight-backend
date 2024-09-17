@@ -2,7 +2,7 @@ import { DeviceResponseDto } from '@devices/dto/device.dto';
 import { Expose } from 'class-transformer';
 import { IsNotEmpty } from 'class-validator';
 
-export class ToggleDeviceStatusRequestBodyDto {
+export class ToggleDeviceStatusRequestDto {
   /**
    * Message for activation/deactivation of the device
    * @example 'Deactivated because of X reason'
@@ -10,15 +10,6 @@ export class ToggleDeviceStatusRequestBodyDto {
   @Expose()
   @IsNotEmpty()
   readonly message: string;
-}
-
-export class ToggleDeviceStatusRequestParamDto {
-  /**
-   * Toggled device id
-   */
-  @Expose()
-  @IsNotEmpty()
-  readonly deviceId: string;
 }
 
 export class ToggleDeviceStatusResponse {

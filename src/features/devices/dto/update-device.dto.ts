@@ -8,24 +8,14 @@ import { Exclude, Expose, Type } from 'class-transformer';
 import {
   IsArray,
   IsEnum,
-  IsNotEmpty,
   IsOptional,
   Matches,
   ValidateNested,
 } from 'class-validator';
-import { DeviceMetricDto, DeviceResponseDto } from './device.dto';
+import { DeviceMetricDto, DeviceResponseDto } from '@devices/dto/device.dto';
 import { Types } from 'mongoose';
 
-export class UpdateDeviceRequestParamDto {
-  /**
-   * updated device's id
-   */
-  @Expose()
-  @IsNotEmpty()
-  readonly deviceId: string;
-}
-
-export class UpdateDeviceRequestBodyDto {
+export class UpdateDeviceRequestDto {
   /**
    * new device's name
    * @example 'Power Meter Device

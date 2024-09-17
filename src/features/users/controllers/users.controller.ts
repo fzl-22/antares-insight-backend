@@ -13,7 +13,7 @@ import {
 import { AuthGuard } from '@core/guards/auth.guard';
 import { IResponse } from '@core/interfaces/interfaces';
 import { UsersService } from '@users/services/users.service';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { UserResponseDto } from '@auth/dto/user.dto';
 import {
   UpdateUserRequestDto,
@@ -23,12 +23,11 @@ import { UserId } from '@core/decorators/user-id.decorator';
 import { ApiAuthorizationHeader } from '@core/decorators/api-authorization-header.decorator';
 
 @ApiTags('Users')
-@ApiBearerAuth()
+@ApiAuthorizationHeader()
 @Controller('/users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
-  @ApiAuthorizationHeader()
   @ApiOkResponse({
     description: 'User fetched successfully.',
     type: GetCurrentUserResponse,
@@ -46,7 +45,6 @@ export class UsersController {
     };
   }
 
-  @ApiAuthorizationHeader()
   @ApiOkResponse({
     description: 'User updated successfully.',
     type: UpdateUserResponse,

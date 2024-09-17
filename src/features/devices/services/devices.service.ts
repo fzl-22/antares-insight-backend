@@ -16,10 +16,7 @@ import {
 import { Types } from 'mongoose';
 import { GetDeviceByIdRequestDto } from '@devices/dto/get-device-by-id.dto';
 import { DeviceHistoryDto, DeviceResponseDto } from '@devices/dto/device.dto';
-import {
-  ToggleDeviceStatusRequestBodyDto,
-  ToggleDeviceStatusRequestParamDto,
-} from '@devices/dto/toggle-device-status.dto';
+import { ToggleDeviceStatusRequestDto } from '@devices/dto/toggle-device-status.dto';
 import {
   DeviceHistoryDocument,
   DeviceStatus,
@@ -27,11 +24,7 @@ import {
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 import { DevicesMqttService } from '@devices/services/devices.mqtt.service';
-import {
-  UpdateDeviceRequestBodyDto,
-  UpdateDeviceRequestParamDto,
-} from '@devices/dto/update-device.dto';
-import { DeleteDeviceRequestDto } from '@devices/dto/delete-device.dto';
+import { UpdateDeviceRequestDto } from '@devices/dto/update-device.dto';
 
 @Injectable()
 export class DevicesService {
@@ -139,10 +132,9 @@ export class DevicesService {
 
   async toggleDeviceStatus(
     userId: string,
-    requestParamDto: ToggleDeviceStatusRequestParamDto,
-    requestBodyDto: ToggleDeviceStatusRequestBodyDto,
+    deviceId: string,
+    requestBodyDto: ToggleDeviceStatusRequestDto,
   ): Promise<DeviceResponseDto> {
-    const { deviceId } = requestParamDto;
     const { message } = requestBodyDto;
 
     const existingUser = await this.usersRepository.findUserById(userId);
@@ -201,11 +193,9 @@ export class DevicesService {
 
   async updateDevice(
     userId: string,
-    requestParamDto: UpdateDeviceRequestParamDto,
-    requestBodyDto: UpdateDeviceRequestBodyDto,
+    deviceId: string,
+    requestBodyDto: UpdateDeviceRequestDto,
   ): Promise<DeviceResponseDto> {
-    const { deviceId } = requestParamDto;
-
     const existingUser = await this.usersRepository.findUserById(userId);
     if (!existingUser) {
       throw new NotFoundException('User not found');
@@ -253,12 +243,7 @@ export class DevicesService {
     );
   }
 
-  async deleteDevice(
-    userId: string,
-    requestParamDto: DeleteDeviceRequestDto,
-  ): Promise<boolean> {
-    const { deviceId } = requestParamDto;
-
+  async deleteDevice(userId: string, deviceId: string): Promise<boolean> {
     const existingUser = await this.usersRepository.findUserById(userId);
     if (!existingUser) {
       throw new NotFoundException('User not found');

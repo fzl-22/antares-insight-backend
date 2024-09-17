@@ -1,16 +1,3 @@
-import { Expose } from 'class-transformer';
-import { IsNotEmpty } from 'class-validator';
-
-export class DeleteDeviceRequestDto {
-  /**
-   * Deleted device's id
-   * @example ''
-   */
-  @Expose()
-  @IsNotEmpty()
-  readonly deviceId: string;
-}
-
 export class DeleteDeviceResponse {
   /**
    * Response status code
