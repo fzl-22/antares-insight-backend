@@ -7,7 +7,7 @@ export type UserConfigurationDocument = HydratedDocument<UserConfiguration>;
 @Schema({ _id: false })
 export class UserConfiguration {
   @Prop({ default: true })
-  enableFcmNotification: boolean;
+  enablePushNotification: boolean;
 
   @Prop({ default: true })
   enableMailNotification: boolean;

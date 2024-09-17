@@ -1,4 +1,4 @@
-import { FirebaseNotificationService } from '@core/utils/notification/firebase-notification.service';
+import { PushNotificationService } from '@core/utils/notification/push-notification.service';
 import { MailNotificationService } from '@core/utils/notification/mail-notification.service';
 import { DeviceDocument, DeviceMetric } from '@devices/schemas/device.schema';
 import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
@@ -13,7 +13,7 @@ export class DevicesMqttService implements OnModuleDestroy {
 
   constructor(
     private mailService: MailNotificationService,
-    private fcmService: FirebaseNotificationService,
+    private pushNotificationService: PushNotificationService,
     private usersRepository: UsersRepository,
     @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
   ) {}
@@ -98,15 +98,15 @@ export class DevicesMqttService implements OnModuleDestroy {
     const title = 'Device Alert';
     const message = `The ${deviceName}'s ${metric.metric} is out of range. Current value: ${value} ${metric.unit}.\n\nThis event occurred at ${formattedDateTime}.\n\nPlease take appropriate action to resolve the issue.`;
 
-    if (user.fcmToken && user.configuration?.enableFcmNotification) {
-      this.fcmService.sendPushNotification({
+    if (user.fcmToken && (user.configuration?.enablePushNotification ?? true)) {
+      this.pushNotificationService.sendPushNotification({
         fcmToken: user.fcmToken,
         title: title,
         body: message,
       });
     }
 
-    if (user.configuration?.enableMailNotification) {
+    if (user.configuration?.enableMailNotification ?? true) {
       this.mailService.sendMail({
         to: user.email,
         subject: title,

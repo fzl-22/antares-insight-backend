@@ -5,7 +5,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { GetCurrentUserRequestDto } from '@users/dto/get-current-user.dto';
-import { UpdateUserRequestDto } from '@users/dto/update-user.dto';
+import { UpdateUserConfigRequestDto } from '@users/dto/update-user-config.dto';
+import { UpdateUserProfileRequestDto } from '@users/dto/update-user-profile.dto';
 import { UsersRepository } from '@users/repositories/users.repository';
 import { plainToClass } from 'class-transformer';
 
@@ -28,18 +29,18 @@ export class UsersService {
     });
   }
 
-  async updateUser(
+  async updateUserProfile(
     userId: string,
-    updateUserDto: UpdateUserRequestDto,
+    updateUserProfileDto: UpdateUserProfileRequestDto,
   ): Promise<UserResponseDto> {
     const existingUser = await this.usersRepository.findUserById(userId);
     if (!existingUser) {
       throw new NotFoundException('User not found');
     }
 
-    if (updateUserDto.email) {
+    if (updateUserProfileDto.email) {
       const userWithSameEmail = await this.usersRepository.findUserByEmail(
-        updateUserDto.email,
+        updateUserProfileDto.email,
       );
       if (userWithSameEmail && userWithSameEmail._id.toString() !== userId) {
         throw new ConflictException('Email is not available');
@@ -48,10 +49,32 @@ export class UsersService {
 
     const updatedUser = await this.usersRepository.update(
       { _id: userId },
-      { $set: updateUserDto },
+      { $set: updateUserProfileDto },
     );
     if (!updatedUser) {
       throw new NotFoundException('Failed to update user');
+    }
+
+    return plainToClass(UserResponseDto, updatedUser.toObject(), {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  async updateUserConfig(
+    userId: string,
+    updateUserConfigDto: UpdateUserConfigRequestDto,
+  ): Promise<UserResponseDto> {
+    const existingUser = await this.usersRepository.findUserById(userId);
+    if (!existingUser) {
+      throw new NotFoundException('User not found');
+    }
+
+    const updatedUser = await this.usersRepository.update(
+      { _id: userId },
+      { $set: { configuration: updateUserConfigDto } },
+    );
+    if (!updatedUser) {
+      throw new NotFoundException('Failed to update user configuration');
     }
 
     return plainToClass(UserResponseDto, updatedUser.toObject(), {

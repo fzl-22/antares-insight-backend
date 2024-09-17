@@ -4,7 +4,7 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 
 @Injectable()
-export class FirebaseNotificationService {
+export class PushNotificationService {
   constructor(@Inject(WINSTON_MODULE_PROVIDER) private logger: Logger) {}
 
   async sendPushNotification(params: {

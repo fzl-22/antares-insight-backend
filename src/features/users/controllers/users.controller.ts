@@ -16,11 +16,12 @@ import { UsersService } from '@users/services/users.service';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { UserResponseDto } from '@auth/dto/user.dto';
 import {
-  UpdateUserRequestDto,
-  UpdateUserResponse,
-} from '@users/dto/update-user.dto';
+  UpdateUserProfileRequestDto,
+  UpdateUserProfileResponse,
+} from '@users/dto/update-user-profile.dto';
 import { UserId } from '@core/decorators/user-id.decorator';
 import { ApiAuthorizationHeader } from '@core/decorators/api-authorization-header.decorator';
+import { UpdateUserConfigRequestDto } from '@users/dto/update-user-config.dto';
 
 @ApiTags('Users')
 @ApiAuthorizationHeader()
@@ -47,18 +48,38 @@ export class UsersController {
 
   @ApiOkResponse({
     description: 'User updated successfully.',
-    type: UpdateUserResponse,
+    type: UpdateUserProfileResponse,
   })
   @UseGuards(AuthGuard)
   @Patch('/update')
-  async updateUser(
+  async updateUserProfile(
     @UserId() userId: string,
-    @Body() updateUserDto: UpdateUserRequestDto,
+    @Body() updateUserDto: UpdateUserProfileRequestDto,
   ): Promise<IResponse<UserResponseDto>> {
-    const response = await this.usersService.updateUser(userId, updateUserDto);
+    const response = await this.usersService.updateUserProfile(
+      userId,
+      updateUserDto,
+    );
 
     return {
       message: 'User updated successfully.',
+      data: response,
+    };
+  }
+
+  @UseGuards(AuthGuard)
+  @Patch('/update-config')
+  async updateUserConfig(
+    @UserId() userId: string,
+    @Body() updateUserConfigDto: UpdateUserConfigRequestDto,
+  ): Promise<IResponse<UserResponseDto>> {
+    const response = await this.usersService.updateUserConfig(
+      userId,
+      updateUserConfigDto,
+    );
+
+    return {
+      message: 'User configuration updated successfully.',
       data: response,
     };
   }

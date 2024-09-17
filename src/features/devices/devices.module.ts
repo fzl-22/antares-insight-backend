@@ -10,7 +10,7 @@ import { DevicesGateway } from '@devices/gateways/devices.gateway';
 import { DevicesMqttService } from '@devices/services/devices.mqtt.service';
 import { UsersService } from '@users/services/users.service';
 import { MailNotificationService } from '@core/utils/notification/mail-notification.service';
-import { FirebaseNotificationService } from '@core/utils/notification/firebase-notification.service';
+import { PushNotificationService } from '@core/utils/notification/push-notification.service';
 
 @Module({
   imports: [
@@ -27,7 +27,7 @@ import { FirebaseNotificationService } from '@core/utils/notification/firebase-n
     DevicesMqttService,
     UsersService,
     MailNotificationService,
-    FirebaseNotificationService,
+    PushNotificationService,
   ],
   controllers: [DevicesController],
 })

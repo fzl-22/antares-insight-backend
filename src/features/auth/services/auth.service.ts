@@ -15,15 +15,15 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { UserResponseDto } from '@auth/dto/user.dto';
 import { MailNotificationService } from '@core/utils/notification/mail-notification.service';
-import { FirebaseNotificationService } from '@core/utils/notification/firebase-notification.service';
+import { PushNotificationService } from '@core/utils/notification/push-notification.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private authRepository: AuthRepository,
     private jwtService: JwtService,
-    private mailService: MailNotificationService,
-    private fcmService: FirebaseNotificationService,
+    private mailNotificationService: MailNotificationService,
+    private pushNotificat: PushNotificationService,
   ) {}
 
   async registerUser(
@@ -48,7 +48,7 @@ export class AuthService {
       );
     }
 
-    this.mailService.sendMail({
+    this.mailNotificationService.sendMail({
       to: email,
       subject: 'Registration successful',
       text: 'You have successfully registered on our platform',
@@ -86,7 +86,7 @@ export class AuthService {
       { fcmToken: fcmToken },
     );
 
-    this.fcmService.sendPushNotification({
+    this.pushNotificat.sendPushNotification({
       fcmToken: updatedUser.fcmToken,
       title: 'Welcome',
       body: 'You have successfully logged in!',

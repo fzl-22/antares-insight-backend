@@ -3,13 +3,15 @@ import { Expose, Exclude, Transform } from 'class-transformer';
 
 export class UserConfigurationDto {
   /**
-   * User configuration for enable/disable mobile notification
+   * User configuration for enable/disable push notification
+   * @example true
    */
   @Expose()
-  readonly enableFcmNotification: boolean;
+  readonly enablePushNotification: boolean;
 
   /**
    * User configuration for enable/disable email notification
+   * @example true
    */
   @Expose()
   readonly enableMailNotification: boolean;

@@ -1,10 +1,9 @@
-import { UserConfigurationDto } from '@auth/dto/user.dto';
-import { DeviceResponseDto } from '@devices/dto/device.dto';
+import { UserConfigurationDto, UserResponseDto } from '@auth/dto/user.dto';
 import { ApiHideProperty } from '@nestjs/swagger';
 import { Exclude, Expose } from 'class-transformer';
 import { IsEmail, IsNotEmpty, IsOptional } from 'class-validator';
 
-export class UpdateUserRequestDto {
+export class UpdateUserProfileRequestDto {
   /**
    * User's first name
    * @example 'John'
@@ -42,10 +41,10 @@ export class UpdateUserRequestDto {
   configuration?: UserConfigurationDto;
 }
 
-export class UpdateUserResponse {
+export class UpdateUserProfileResponse {
   /**
    * Response status code
-   * @example 201
+   * @example 200
    */
   readonly statusCode: number;
 
@@ -58,5 +57,5 @@ export class UpdateUserResponse {
   /**
    * Response data
    */
-  readonly data: DeviceResponseDto;
+  readonly data: UserResponseDto;
 }

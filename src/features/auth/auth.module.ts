@@ -5,7 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from '@auth/schemas/user.schema';
 import { AuthRepository } from '@auth/repositories/auth.repository';
 import { MailNotificationService } from '@core/utils/notification/mail-notification.service';
-import { FirebaseNotificationService } from '@core/utils/notification/firebase-notification.service';
+import { PushNotificationService } from '@core/utils/notification/push-notification.service';
 
 @Module({
   imports: [
@@ -16,7 +16,7 @@ import { FirebaseNotificationService } from '@core/utils/notification/firebase-n
     AuthService,
     AuthRepository,
     MailNotificationService,
-    FirebaseNotificationService,
+    PushNotificationService,
   ],
 })
 export class AuthModule {}
