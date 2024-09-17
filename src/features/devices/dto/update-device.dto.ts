@@ -1,8 +1,4 @@
-import {
-  DeviceCategory,
-  DeviceHistory,
-  DeviceStatus,
-} from '@devices/schemas/device.schema';
+import { DeviceCategory, DeviceStatus } from '@devices/schemas/device.schema';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose, Type } from 'class-transformer';
 import {
@@ -12,7 +8,11 @@ import {
   Matches,
   ValidateNested,
 } from 'class-validator';
-import { DeviceMetricDto, DeviceResponseDto } from '@devices/dto/device.dto';
+import {
+  DeviceHistoryDto,
+  DeviceMetricDto,
+  DeviceResponseDto,
+} from '@devices/dto/device.dto';
 import { Types } from 'mongoose';
 
 export class UpdateDeviceRequestDto {
@@ -75,7 +75,7 @@ export class UpdateDeviceRequestDto {
 
   @ApiHideProperty()
   @Exclude()
-  readonly history?: DeviceHistory[];
+  readonly history?: DeviceHistoryDto[];
 }
 
 export class UpdateDeviceResponse {
