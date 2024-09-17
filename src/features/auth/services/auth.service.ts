@@ -48,7 +48,7 @@ export class AuthService {
       );
     }
 
-    this.mailNotificationService.sendMail({
+    this.mailNotificationService.sendMailNotification({
       to: email,
       subject: 'Registration successful',
       text: 'You have successfully registered on our platform',

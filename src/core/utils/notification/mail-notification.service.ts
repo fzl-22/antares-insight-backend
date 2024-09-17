@@ -9,7 +9,7 @@ export class MailNotificationService {
     @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
   ) {}
 
-  async sendMail(params: {
+  async sendMailNotification(params: {
     to: string;
     subject: string;
     text: string;

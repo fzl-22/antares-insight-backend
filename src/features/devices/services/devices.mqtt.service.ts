@@ -107,7 +107,7 @@ export class DevicesMqttService implements OnModuleDestroy {
     }
 
     if (user.configuration?.enableMailNotification ?? true) {
-      this.mailService.sendMail({
+      this.mailService.sendMailNotification({
         to: user.email,
         subject: title,
         text: message,
