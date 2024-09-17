@@ -21,7 +21,10 @@ import {
 } from '@users/dto/update-user-profile.dto';
 import { UserId } from '@core/decorators/user-id.decorator';
 import { ApiAuthorizationHeader } from '@core/decorators/api-authorization-header.decorator';
-import { UpdateUserConfigRequestDto } from '@users/dto/update-user-config.dto';
+import {
+  UpdateUserConfigRequestDto,
+  UpdateUserConfigResponse,
+} from '@users/dto/update-user-config.dto';
 
 @ApiTags('Users')
 @ApiAuthorizationHeader()
@@ -67,6 +70,10 @@ export class UsersController {
     };
   }
 
+  @ApiOkResponse({
+    description: 'User configuration updated successfully.',
+    type: UpdateUserConfigResponse,
+  })
   @UseGuards(AuthGuard)
   @Patch('/update-config')
   async updateUserConfig(

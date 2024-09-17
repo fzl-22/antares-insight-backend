@@ -10,7 +10,7 @@ export function ApiAuthorizationHeader() {
       required: true,
       schema: {
         type: 'string',
-        example: 'my.jwt.token',
+        example: 'Bearer my.jwt.token',
       },
     }),
   );
