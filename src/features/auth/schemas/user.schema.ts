@@ -1,3 +1,4 @@
+import { DeviceNotificationLog } from '@features/notifications/schemas/device-notification-log.schema.dto';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 
@@ -29,6 +30,9 @@ export class User {
 
   @Prop({ type: UserConfiguration, default: () => ({}) })
   configuration?: UserConfiguration;
+
+  @Prop({ type: [DeviceNotificationLog], default: [] })
+  notificationHistory?: DeviceNotificationLog[];
 
   @Prop()
   fcmToken?: string;
