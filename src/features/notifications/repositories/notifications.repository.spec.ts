@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotificationsRepository } from './notifications.repository';
+import { NotificationsRepository } from '@notifications/repositories/notifications.repository';
 
 describe('NotificationsRepository', () => {
   let provider: NotificationsRepository;

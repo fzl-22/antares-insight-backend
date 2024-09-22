@@ -8,11 +8,10 @@ import { User } from '@auth/schemas/user.schema';
 import { UsersModule } from '@users/users.module';
 import { DevicesGateway } from '@devices/gateways/devices.gateway';
 import { DevicesMqttService } from '@devices/services/devices.mqtt.service';
-import { UsersService } from '@users/services/users.service';
-import { MailNotificationService } from '@core/utils/notification/mail-notification.service';
-import { PushNotificationService } from '@core/utils/notification/push-notification.service';
-import { UsersRepository } from '@users/repositories/users.repository';
 import { AuthRepository } from '@auth/repositories/auth.repository';
+import { NotificationsService } from '@features/notifications/services/notifications.service';
+import { UsersRepository } from '@users/repositories/users.repository';
+import { NotificationsRepository } from '@features/notifications/repositories/notifications.repository';
 
 @Module({
   imports: [
@@ -28,10 +27,9 @@ import { AuthRepository } from '@auth/repositories/auth.repository';
     DevicesGateway,
     DevicesMqttService,
     AuthRepository,
-    UsersService,
     UsersRepository,
-    MailNotificationService,
-    PushNotificationService,
+    NotificationsService,
+    NotificationsRepository,
   ],
   controllers: [DevicesController],
 })

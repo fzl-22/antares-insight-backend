@@ -2,12 +2,13 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   GetNotificationHistoryRequestDto,
   GetNotificationHistoryResponseDto,
-} from '../dto/get-notification-history.dto';
+} from '@notifications/dto/get-notification-history.dto';
 import { UsersRepository } from '@users/repositories/users.repository';
-import { NotificationsRepository } from '../repositories/notifications.repository';
+import { NotificationsRepository } from '@notifications/repositories/notifications.repository';
 import { Types } from 'mongoose';
 import { plainToClass } from 'class-transformer';
-import { DeviceNotificationLogDto } from '../dto/device-notification-log.dto';
+import { DeviceNotificationLogDto } from '@notifications/dto/device-notification-log.dto';
+import { DeviceMetric } from '@devices/schemas/device.schema';
 
 @Injectable()
 export class NotificationsService {
@@ -16,7 +17,7 @@ export class NotificationsService {
     private notificationsRepository: NotificationsRepository,
   ) {}
 
-  async getDeviceNotification(
+  async getDeviceNotificationHistory(
     userId: string,
     getNotificationHistoryDto: GetNotificationHistoryRequestDto,
   ): Promise<GetNotificationHistoryResponseDto> {
@@ -38,16 +39,18 @@ export class NotificationsService {
 
     const totalPages = Math.ceil(totalNotifications / perPage);
 
-    const notificationHistoryResponse = notificationHistory.map((log) => {
-      return plainToClass(DeviceNotificationLogDto, log.toObject());
-    });
-
-    return plainToClass(GetNotificationHistoryResponseDto, {
-      page: page,
-      perPage: perPage,
-      totalPages: totalPages,
-      notificationHistory: notificationHistoryResponse,
-    });
+    return plainToClass(
+      GetNotificationHistoryResponseDto,
+      {
+        page: page,
+        perPage: perPage,
+        totalPages: totalPages,
+        notificationHistory: notificationHistory.map((log) => {
+          return plainToClass(DeviceNotificationLogDto, log.toObject());
+        }),
+      },
+      { excludePrefixes: ['_'] },
+    );
   }
 
   async createDeviceNotificationLog(params: {
@@ -58,11 +61,61 @@ export class NotificationsService {
   }): Promise<void> {
     const { userId, deviceId, title, content } = params;
 
-    const existingUser = await this.usersRepository.findUserById(userId);
-    if (!existingUser) {
+    await this.notificationsRepository.createNotificationLog({
+      userId: Types.ObjectId.createFromHexString(userId),
+      deviceId: Types.ObjectId.createFromHexString(deviceId),
+      title,
+      content,
+    });
+  }
+
+  async sendNotification(
+    userId: string,
+    deviceId: string,
+    deviceName: string,
+    value: number,
+    metric: DeviceMetric,
+  ): Promise<void> {
+    // always fetch user data to prevent send notification mismatch
+    const user = await this.usersRepository.findUserById(userId);
+    if (!user) {
       throw new NotFoundException('User not found');
     }
 
-    
+    const formattedDateTime = new Date().toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric',
+      hour12: false,
+    });
+
+    const title = 'Device Alert';
+    const message = `The ${deviceName}'s ${metric.metric} is out of range. Current value: ${value} ${metric.unit}.\n\nThis event occurred at ${formattedDateTime}.\n\nPlease take appropriate action to resolve the issue.`;
+
+    await this.createDeviceNotificationLog({
+      userId: user._id.toString(),
+      deviceId: deviceId,
+      title: title,
+      content: message,
+    });
+
+    if (user.fcmToken && (user.configuration?.enablePushNotification ?? true)) {
+      this.notificationsRepository.sendPushNotification({
+        fcmToken: user.fcmToken,
+        title: title,
+        body: message,
+      });
+    }
+
+    if (user.configuration?.enableMailNotification ?? true) {
+      this.notificationsRepository.sendMailNotification({
+        to: user.email,
+        subject: title,
+        text: message,
+      });
+    }
   }
 }

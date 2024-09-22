@@ -14,16 +14,12 @@ import {
 } from '@auth/dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UserResponseDto } from '@auth/dto/user.dto';
-import { MailNotificationService } from '@core/utils/notification/mail-notification.service';
-import { PushNotificationService } from '@core/utils/notification/push-notification.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private authRepository: AuthRepository,
     private jwtService: JwtService,
-    private mailNotificationService: MailNotificationService,
-    private pushNotificat: PushNotificationService,
   ) {}
 
   async registerUser(
@@ -47,12 +43,6 @@ export class AuthService {
         'Failed to register user, please try again later',
       );
     }
-
-    this.mailNotificationService.sendMailNotification({
-      to: email,
-      subject: 'Registration successful',
-      text: 'You have successfully registered on our platform',
-    });
 
     return plainToClass(
       UserResponseDto,
@@ -86,13 +76,10 @@ export class AuthService {
       { fcmToken: fcmToken },
     );
 
-    this.pushNotificat.sendPushNotification({
-      fcmToken: updatedUser.fcmToken,
-      title: 'Welcome',
-      body: 'You have successfully logged in!',
-    });
-
-    const userResponse = plainToInstance(UserResponseDto, user.toObject());
+    const userResponse = plainToInstance(
+      UserResponseDto,
+      updatedUser.toObject(),
+    );
 
     return plainToClass(
       LoginUserResponseDto,

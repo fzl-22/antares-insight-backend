@@ -1,20 +1,16 @@
-import { PushNotificationService } from '@core/utils/notification/push-notification.service';
-import { MailNotificationService } from '@core/utils/notification/mail-notification.service';
 import { DeviceDocument, DeviceMetric } from '@devices/schemas/device.schema';
 import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
-import { UsersRepository } from '@users/repositories/users.repository';
 import { connect, MqttClient } from 'mqtt';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
+import { NotificationsService } from '@features/notifications/services/notifications.service';
 
 @Injectable()
 export class DevicesMqttService implements OnModuleDestroy {
   public mqttClients: Map<string, MqttClient> = new Map();
 
   constructor(
-    private mailService: MailNotificationService,
-    private pushNotificationService: PushNotificationService,
-    private usersRepository: UsersRepository,
+    private notificationsService: NotificationsService,
     @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
   ) {}
 
@@ -48,8 +44,14 @@ export class DevicesMqttService implements OnModuleDestroy {
 
       client.on('message', (topic, message) => {
         const data = JSON.parse(message.toString());
-        this.processDeviceData(userId, device.name, device.metrics, data);
-        this.logger.info(`Device ${deviceId} sent ${data}`, {
+        this.processDeviceData(
+          userId,
+          device._id.toString(),
+          device.name,
+          device.metrics,
+          data,
+        );
+        this.logger.info(`Device ${deviceId} sent ${JSON.stringify(data)}`, {
           context: 'MQTT',
         });
       });
@@ -64,6 +66,7 @@ export class DevicesMqttService implements OnModuleDestroy {
 
   processDeviceData(
     userId: string,
+    deviceId: string,
     deviceName: string,
     metrics: DeviceMetric[],
     data: any,
@@ -71,50 +74,15 @@ export class DevicesMqttService implements OnModuleDestroy {
     metrics.forEach((metric) => {
       const value = data[metric.metric];
       if (value < metric.min || value > metric.max) {
-        this.sendNotification(userId, deviceName, value, metric);
+        this.notificationsService.sendNotification(
+          userId,
+          deviceId,
+          deviceName,
+          value,
+          metric,
+        );
       }
     });
-  }
-
-  async sendNotification(
-    userId: string,
-    deviceName: string,
-    value: number,
-    metric: DeviceMetric,
-  ): Promise<void> {
-    // always fetch user data to prevent send notification mismatch
-    const user = await this.usersRepository.findUserById(userId);
-
-    const formattedDateTime = new Date().toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric',
-      second: 'numeric',
-      hour12: false,
-    });
-
-    const title = 'Device Alert';
-    const message = `The ${deviceName}'s ${metric.metric} is out of range. Current value: ${value} ${metric.unit}.\n\nThis event occurred at ${formattedDateTime}.\n\nPlease take appropriate action to resolve the issue.`;
-
-    if (user.fcmToken && (user.configuration?.enablePushNotification ?? true)) {
-      this.pushNotificationService.sendPushNotification({
-        fcmToken: user.fcmToken,
-        title: title,
-        body: message,
-      });
-    }
-
-    if (user.configuration?.enableMailNotification ?? true) {
-      this.mailService.sendMailNotification({
-        to: user.email,
-        subject: title,
-        text: message,
-      });
-    }
-
-    this.logger.warn(message, { context: 'MQTT' });
   }
 
   disconnectDevice(deviceId: string) {

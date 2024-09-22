@@ -22,6 +22,7 @@
       "@auth/*": ["src/features/auth/*"],
       "@users/*": ["src/features/users/*"],
       "@devices/*": ["src/features/devices/*"],
+      "@notifications/*": ["src/features/notifications/*"],
       "@core/*": ["src/core/*"],
       "@features/*": ["src/features/*"],
       "@/*": ["src/*"]

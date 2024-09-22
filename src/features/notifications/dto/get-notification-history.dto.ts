@@ -1,6 +1,6 @@
 import { Expose, Transform, Type } from 'class-transformer';
 import { IsInt, IsOptional, Min, ValidateNested } from 'class-validator';
-import { DeviceNotificationLogDto } from './device-notification-log.dto';
+import { DeviceNotificationLogDto } from '@notifications/dto/device-notification-log.dto';
 
 export const DEFAULT_PAGE = 1;
 export const DEFAULT_PER_PAGE = 10;
